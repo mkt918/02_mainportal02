@@ -1,0 +1,30 @@
+node_modules/
+dist/
+dist-ssr/
+*.local
+.npm/
+
+# 環境変数
+.env
+.env.*
+!.env.example
+
+# その他
+.DS_Store
+*.suo
+*.ntvs*
+*.class
+*.exe
+*.dll
+*.o
+*.so
+*.dylib
+
+# エディタ系
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
