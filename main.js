@@ -74,6 +74,13 @@ document.getElementById('s-bg-file').addEventListener('change', (e) => {
     }
 });
 
+function updateHeaderPreviews(color) {
+    const c = document.getElementById('header-preview-colored');
+    const g = document.getElementById('header-preview-gradient');
+    if (c) c.style.backgroundColor = color;
+    if (g) g.style.background = `linear-gradient(135deg, ${color}, ${color}aa)`;
+}
+
 function buildPeriodTimeInputs(periodTimes) {
     const container = document.getElementById('s-period-times-list');
     const count = parseInt(document.getElementById('s-tt-periods')?.value || 6);
@@ -147,6 +154,11 @@ function openSettings() {
     document.getElementById('w-links').checked = v.links !== false;
 
     buildPeriodTimeInputs(s.periodTimes);
+    // ヘッダースタイルのラジオ
+    const hsInput = document.querySelector(`input[name="s-header-style"][value="${s.headerStyle || 'glass'}"]`);
+    if (hsInput) hsInput.checked = true;
+    // ヘッダープレビュー色更新
+    updateHeaderPreviews(s.themeColor);
     modal.classList.remove('hidden');
     if (window.lucide) lucide.createIcons({ root: modal });
 }
@@ -182,6 +194,7 @@ document.getElementById('btn-save-settings').addEventListener('click', () => {
         periodTimes,
         fontSize: document.querySelector('input[name="s-fontsize"]:checked').value,
         lessonsLimit: parseInt(document.getElementById('s-lessons-limit').value),
+        headerStyle: document.querySelector('input[name="s-header-style"]:checked')?.value || 'glass',
         widgetVisibility: {
             timetable: document.getElementById('w-timetable').checked,
             lessons: document.getElementById('w-lessons').checked,

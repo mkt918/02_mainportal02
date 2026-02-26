@@ -21,7 +21,8 @@ export class Settings {
                 { start: '15:00', end: '15:50' },
                 { start: '16:00', end: '16:50' },
             ],
-            lessonsLimit: 4,         // 2, 4, 6, 8
+            lessonsLimit: 0,         // 0 = all, 2/4/6/8 = limit
+            headerStyle: 'glass',    // glass, solid, colored, gradient
             widgetVisibility: {
                 timetable: true,
                 lessons: true,
@@ -194,6 +195,35 @@ export class Settings {
         if (titleEl) titleEl.textContent = s.portalTitle || '学習ポータル';
         document.title = (s.portalTitle || '学習ポータル') + ' - Dashboard';
 
+        // Header style
+        const header = document.getElementById('main-header');
+        if (header) {
+            header.removeAttribute('class');
+            const base = 'sticky top-0 z-50 transition-all duration-300';
+            const hs = s.headerStyle || 'glass';
+            if (hs === 'glass') {
+                header.className = `${base} bg-white/80 backdrop-blur-md shadow-sm`;
+            } else if (hs === 'solid') {
+                header.className = `${base} bg-white shadow-md border-b border-slate-200`;
+            } else if (hs === 'colored') {
+                header.className = `${base} shadow-lg`;
+                header.style.backgroundColor = s.themeColor;
+            } else if (hs === 'gradient') {
+                header.className = `${base} shadow-md`;
+                header.style.backgroundColor = '';
+                header.style.backgroundImage = `linear-gradient(135deg, ${s.themeColor}, ${this.adjustColor(s.themeColor, -40)})`;
+            }
+            // テキスト色: colored/gradientは白
+            if (hs === 'colored' || hs === 'gradient') {
+                header.querySelector('h1')?.style && (header.querySelector('h1').style.webkitTextFillColor = 'white');
+                header.querySelector('h1')?.classList.remove('bg-clip-text', 'text-transparent', 'bg-gradient-to-r');
+            } else {
+                if (header.querySelector('h1')) {
+                    header.querySelector('h1').style.webkitTextFillColor = '';
+                }
+            }
+        }
+
         // Widget visibility
         const v = s.widgetVisibility || {};
         const widgetMap = {
@@ -209,3 +239,4 @@ export class Settings {
         }
     }
 }
+
