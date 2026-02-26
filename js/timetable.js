@@ -8,7 +8,6 @@ export class Timetable {
         this.data = this.loadData();
         this.subjectColors = this.loadColors();
 
-        // Subject color preset palette
         this.palette = [
             '#bfdbfe', '#bbf7d0', '#fef08a', '#fecaca', '#ddd6fe',
             '#fed7aa', '#cffafe', '#fbcfe8', '#e5e7eb', '#d1fae5',
@@ -41,7 +40,7 @@ export class Timetable {
         for (let p = 1; p <= 7; p++) {
             initial[p] = {};
             for (const d of ['月', '火', '水', '木', '金', '土']) {
-                initial[p][d] = { subject: '', room: '' };
+                initial[p][d] = { subject: '', memo: '' };
             }
         }
         return initial;
@@ -60,12 +59,9 @@ export class Timetable {
         localStorage.setItem(this.colorStorageKey, JSON.stringify(this.subjectColors));
     }
 
-    // 科目名から色を自動割当（未設定の場合はパレットから順番に）
     getSubjectColor(subject) {
         if (!subject) return '';
         if (this.subjectColors[subject]) return this.subjectColors[subject];
-
-        // Auto-assign from palette
         const usedColors = Object.values(this.subjectColors);
         const available = this.palette.filter(c => !usedColors.includes(c));
         const color = available[0] || this.palette[Object.keys(this.subjectColors).length % this.palette.length];
@@ -87,12 +83,11 @@ export class Timetable {
 
     updateCell(period, day, field, value) {
         if (!this.data[period]) this.data[period] = {};
-        if (!this.data[period][day]) this.data[period][day] = { subject: '', room: '' };
+        if (!this.data[period][day]) this.data[period][day] = { subject: '', memo: '' };
         this.data[period][day][field] = value;
         this.saveData();
     }
 
-    // 登録されている全科目名のリストを取得
     getAllSubjects() {
         const subjects = new Set();
         for (const p of Object.values(this.data)) {
@@ -132,7 +127,9 @@ export class Timetable {
         </td>`;
 
             for (const d of days) {
-                const cell = (this.data[p] && this.data[p][d]) ? this.data[p][d] : { subject: '', room: '' };
+                // 旧データ(room)との後方互換性を保つ
+                const raw = (this.data[p] && this.data[p][d]) ? this.data[p][d] : { subject: '', memo: '' };
+                const cell = { subject: raw.subject || '', memo: raw.memo ?? raw.room ?? '' };
                 const bgColor = cell.subject ? this.getSubjectColor(cell.subject) : '';
                 const bgStyle = bgColor ? `background-color: ${bgColor};` : '';
 
@@ -141,17 +138,17 @@ export class Timetable {
                 if (this.isEditing) {
                     html += `
             <div class="flex flex-col gap-1">
-              <input type="text" class="w-full text-center border border-slate-300 rounded px-1 py-0.5 text-slate-800 text-sm focus:border-primary-500 outline-none bg-white/80" 
+              <input type="text" class="w-full text-center border border-slate-300 rounded px-1 py-0.5 text-slate-800 text-sm focus:border-primary-500 outline-none bg-white/80"
                 value="${cell.subject}" placeholder="科目" data-p="${p}" data-d="${d}" data-f="subject">
-              <input type="text" class="w-full text-center border border-slate-200 rounded px-1 text-xs text-slate-500 focus:border-primary-500 outline-none bg-white/60" 
-                value="${cell.room}" placeholder="教室" data-p="${p}" data-d="${d}" data-f="room">
+              <input type="text" class="w-full text-center border border-slate-200 rounded px-1 text-xs text-slate-500 focus:border-primary-500 outline-none bg-white/60"
+                value="${cell.memo}" placeholder="メモ" data-p="${p}" data-d="${d}" data-f="memo">
             </div>
           `;
                 } else {
                     html += `
             <div class="min-h-[3rem] flex flex-col items-center justify-center px-1">
               <div class="font-semibold text-slate-800 text-sm ${!cell.subject ? 'text-slate-300' : ''}">${cell.subject || '　'}</div>
-              ${cell.room ? `<div class="text-[10px] text-slate-500 mt-0.5">${cell.room}</div>` : ''}
+              ${cell.memo ? `<div class="text-[10px] text-slate-500 mt-0.5">${cell.memo}</div>` : ''}
             </div>
           `;
                 }
@@ -168,7 +165,6 @@ export class Timetable {
                 input.addEventListener('change', (e) => {
                     const { p, d, f } = e.target.dataset;
                     this.updateCell(Number(p), d, f, e.target.value);
-                    // 科目名が変わったら色を自動付与して再描画
                     if (f === 'subject') {
                         this.getSubjectColor(e.target.value);
                         this.render();

@@ -63,7 +63,7 @@ export class Links {
     if (!this.container) return;
 
     let html = `
-      <div class="grid grid-cols-2 gap-3 mb-4">
+      <div class="flex flex-col gap-2 mb-4">
     `;
 
     this.links.forEach(link => {
