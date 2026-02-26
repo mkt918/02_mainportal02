@@ -69,7 +69,7 @@ export class Links {
     if (!this.container) return;
 
     this.container.innerHTML = `
-      <div class="flex flex-col gap-2 mb-4">
+      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2 mb-4">
         ${this.links.map(l => this.renderLink(l)).join('')}
       </div>
       <div class="pt-4 border-t border-slate-100">
