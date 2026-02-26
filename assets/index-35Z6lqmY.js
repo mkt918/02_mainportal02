@@ -1,0 +1,118 @@
+(function(){const t=document.createElement("link").relList;if(t&&t.supports&&t.supports("modulepreload"))return;for(const r of document.querySelectorAll('link[rel="modulepreload"]'))s(r);new MutationObserver(r=>{for(const a of r)if(a.type==="childList")for(const i of a.addedNodes)i.tagName==="LINK"&&i.rel==="modulepreload"&&s(i)}).observe(document,{childList:!0,subtree:!0});function e(r){const a={};return r.integrity&&(a.integrity=r.integrity),r.referrerPolicy&&(a.referrerPolicy=r.referrerPolicy),r.crossOrigin==="use-credentials"?a.credentials="include":r.crossOrigin==="anonymous"?a.credentials="omit":a.credentials="same-origin",a}function s(r){if(r.ep)return;r.ep=!0;const a=e(r);fetch(r.href,a)}})();class L{constructor(t,e){this.container=document.getElementById(t),this.storageKey="class-portal-timetable",this.settings=e,this.isEditing=!1,this.data=this.loadData(),this.render()}get days(){var e,s;const t=((s=(e=this.settings)==null?void 0:e.settings)==null?void 0:s.timetableDays)||5;return["月","火","水","木","金","土"].slice(0,t)}get periods(){var e,s;const t=((s=(e=this.settings)==null?void 0:e.settings)==null?void 0:s.timetablePeriods)||6;return Array.from({length:t},(r,a)=>a+1)}get periodTimes(){var t,e;return((e=(t=this.settings)==null?void 0:t.settings)==null?void 0:e.periodTimes)||[]}get showTimes(){var t,e;return((e=(t=this.settings)==null?void 0:t.settings)==null?void 0:e.showPeriodTimes)||!1}loadData(){const t=localStorage.getItem(this.storageKey);if(t)return JSON.parse(t);const e={};for(let s=1;s<=7;s++){e[s]={};for(const r of["月","火","水","木","金","土"])e[s][r]={subject:"",room:""}}return e}saveData(){localStorage.setItem(this.storageKey,JSON.stringify(this.data))}toggleEdit(){this.isEditing=!this.isEditing,this.render()}updateCell(t,e,s,r){this.data[t]||(this.data[t]={}),this.data[t][e]||(this.data[t][e]={subject:"",room:""}),this.data[t][e][s]=r,this.saveData()}render(){if(!this.container)return;const t=this.days,e=this.periods,s=this.periodTimes,r=this.showTimes;let a=`
+      <table class="w-full text-sm text-left border-collapse min-w-[500px]">
+        <thead>
+          <tr>
+            <th class="border-b border-r border-slate-200 p-2 text-center text-slate-500 font-medium bg-slate-50/50 w-20">
+              ${r?"時間":""}
+            </th>
+            ${t.map(i=>`<th class="border-b border-slate-200 p-2 text-center text-slate-600 font-medium bg-slate-50/50">${i}</th>`).join("")}
+          </tr>
+        </thead>
+        <tbody>
+    `;for(const i of e){const c=s[i-1];a+=`<tr>
+        <td class="border-b border-r border-slate-200 p-2 text-center bg-slate-50/50">
+          <div class="font-bold text-slate-600 text-sm">${i}限</div>
+          ${r&&c?`<div class="text-[10px] text-slate-400 mt-0.5">${c.start}<br>${c.end}</div>`:""}
+        </td>`;for(const u of t){const n=this.data[i]&&this.data[i][u]?this.data[i][u]:{subject:"",room:""};a+='<td class="border-b border-slate-200 p-1 text-center transition-colors hover:bg-slate-50/50">',this.isEditing?a+=`
+            <div class="flex flex-col gap-1">
+              <input type="text" class="w-full text-center border border-slate-200 rounded px-1 py-0.5 text-slate-800 text-sm focus:border-primary-500 outline-none" value="${n.subject}" placeholder="科目" data-p="${i}" data-d="${u}" data-f="subject">
+              <input type="text" class="w-full text-center border border-slate-200 rounded px-1 text-xs text-slate-500 focus:border-primary-500 outline-none" value="${n.room}" placeholder="教室" data-p="${i}" data-d="${u}" data-f="room">
+            </div>
+          `:a+=`
+            <div class="min-h-[3rem] flex flex-col items-center justify-center px-1">
+              <div class="font-medium text-slate-800 text-sm ${n.subject?"":"text-slate-300"}">${n.subject||"　"}</div>
+              ${n.room?`<div class="text-[10px] text-slate-400 mt-0.5">${n.room}</div>`:""}
+            </div>
+          `,a+="</td>"}a+="</tr>"}a+="</tbody></table>",this.container.innerHTML=a,this.isEditing&&this.container.querySelectorAll("input").forEach(i=>{i.addEventListener("change",c=>{const{p:u,d:n,f:y}=c.target.dataset;this.updateCell(Number(u),n,y,c.target.value)})})}}class k{constructor(t){this.container=document.getElementById(t),this.currentDate=new Date,this.render()}changeMonth(t){this.currentDate.setMonth(this.currentDate.getMonth()+t),this.render()}render(){if(!this.container)return;const t=this.currentDate.getFullYear(),e=this.currentDate.getMonth(),s=new Date,r=s.getFullYear(),a=s.getMonth(),i=s.getDate(),c=new Date(t,e+1,0).getDate(),n=(new Date(t,e,1).getDay()+6)%7,y=["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"],E=["月","火","水","木","金","土","日"];let p=`
+      <div class="flex items-center justify-between mb-4">
+        <button class="cal-prev p-1 hover:bg-slate-100 rounded-lg text-slate-500 transition-colors"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
+        <div class="font-semibold text-slate-800">${t}年 ${y[e]}</div>
+        <button class="cal-next p-1 hover:bg-slate-100 rounded-lg text-slate-500 transition-colors"><i data-lucide="chevron-right" class="w-5 h-5"></i></button>
+      </div>
+      <div class="grid grid-cols-7 gap-1 text-center text-xs mb-2">
+    `;E.forEach((l,h)=>{p+=`<div class="font-medium ${h===5?"text-blue-500":h===6?"text-red-500":"text-slate-500"} pb-2">${l}</div>`}),p+='</div><div class="grid grid-cols-7 gap-1 text-sm">';for(let l=0;l<n;l++)p+="<div></div>";for(let l=1;l<=c;l++){const h=t===r&&e===a&&l===i,b=(n+l-1)%7;let f="text-slate-700";b===5&&(f="text-blue-600"),b===6&&(f="text-red-600");const I=h?"bg-primary-500 text-white font-bold rounded-lg shadow-sm":`hover:bg-slate-100 rounded-lg ${f}`;p+=`
+        <div class="aspect-square flex items-center justify-center cursor-pointer transition-colors ${I}">
+          ${l}
+        </div>
+      `}p+="</div>",this.container.innerHTML=p,window.lucide&&window.lucide.createIcons({root:this.container}),this.container.querySelector(".cal-prev").addEventListener("click",()=>this.changeMonth(-1)),this.container.querySelector(".cal-next").addEventListener("click",()=>this.changeMonth(1))}}class ${constructor(t,e,s){this.list=document.getElementById(t),this.input=document.getElementById(e),this.btnAdd=document.getElementById(s),this.storageKey="class-portal-todo",this.todos=this.loadData(),this.btnAdd&&this.input&&(this.btnAdd.addEventListener("click",()=>this.addTodo()),this.input.addEventListener("keypress",r=>{r.key==="Enter"&&this.addTodo()})),this.render()}loadData(){const t=localStorage.getItem(this.storageKey);return t?JSON.parse(t):[]}saveData(){localStorage.setItem(this.storageKey,JSON.stringify(this.todos))}addTodo(){const t=this.input.value.trim();t&&(this.todos.push({id:Date.now().toString(),text:t,completed:!1}),this.input.value="",this.saveData(),this.render())}toggleTodo(t){const e=this.todos.find(s=>s.id===t);e&&(e.completed=!e.completed,this.saveData(),this.render())}deleteTodo(t){this.todos=this.todos.filter(e=>e.id!==t),this.saveData(),this.render()}render(){if(!this.list)return;if(this.todos.length===0){this.list.innerHTML='<li class="text-sm text-slate-400 text-center py-4">タスクはありません</li>';return}let t="";this.todos.forEach(e=>{t+=`
+        <li class="flex items-center gap-3 p-2 hover:bg-slate-50 rounded-lg group transition-colors border border-transparent hover:border-slate-100">
+          <button class="todo-toggle text-slate-400 hover:text-primary-500 transition-colors" data-id="${e.id}">
+            <i data-lucide="${e.completed?"check-circle-2":"circle"}" class="w-5 h-5 ${e.completed?"text-primary-500":""}"></i>
+          </button>
+          <span class="flex-1 text-sm ${e.completed?"text-slate-400 line-through":"text-slate-700"}">${this.escapeHTML(e.text)}</span>
+          <button class="todo-delete opacity-0 group-hover:opacity-100 text-slate-400 hover:text-red-500 transition-all p-1 rounded hover:bg-red-50" data-id="${e.id}">
+            <i data-lucide="trash-2" class="w-4 h-4"></i>
+          </button>
+        </li>
+      `}),this.list.innerHTML=t,window.lucide&&window.lucide.createIcons({root:this.list}),this.list.querySelectorAll(".todo-toggle").forEach(e=>{e.addEventListener("click",s=>{this.toggleTodo(s.currentTarget.dataset.id)})}),this.list.querySelectorAll(".todo-delete").forEach(e=>{e.addEventListener("click",s=>{this.deleteTodo(s.currentTarget.dataset.id)})})}escapeHTML(t){return t.replace(/[&<>'"]/g,e=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"})[e]||e)}}class T{constructor(t){this.container=document.getElementById(t),this.storageKey="class-portal-links",this.defaultLinks=[{id:"1",title:"全商検定タイピング",url:"https://mkt918.github.io/typing03/",icon:"keyboard",color:"text-blue-500"},{id:"2",title:"情報処理用語クイズ",url:"https://mkt918.github.io/quizmillion/",icon:"help-circle",color:"text-amber-500"},{id:"3",title:"トランプでアルゴリズム",url:"https://mkt918.github.io/pro_01/",icon:"layers",color:"text-red-500"},{id:"4",title:"プログラミングでお絵描き",url:"https://mkt918.github.io/pro_02/",icon:"palette",color:"text-purple-500"},{id:"5",title:"愛知県ジグソーパズル",url:"https://mkt918.github.io/045_aichipazuru/",icon:"puzzle",color:"text-emerald-500"},{id:"6",title:"マス目プログラミング",url:"https://mkt918.github.io/pro_04/",icon:"grid",color:"text-indigo-500"},{id:"7",title:"株式投資ゲーム",url:"https://mkt918.github.io/stock_01/",icon:"trending-up",color:"text-green-600"},{id:"8",title:"情報処理計算問題",url:"https://mkt918.github.io/pro_05_keisan/index.html",icon:"calculator",color:"text-slate-700"}],this.links=this.loadData(),this.render()}loadData(){const t=localStorage.getItem(this.storageKey);if(!t)return[...this.defaultLinks];const e=JSON.parse(t),s=[...this.defaultLinks];return e.forEach(r=>{s.find(a=>a.id===r.id)||s.push(r)}),s}saveData(){const t=this.links.filter(e=>!this.defaultLinks.find(s=>s.id===e.id));localStorage.setItem(this.storageKey,JSON.stringify(t))}addLink(t,e){!t||!e||(this.links.push({id:Date.now().toString(),title:t,url:e,icon:"link-2",color:"text-primary-500",custom:!0}),this.saveData(),this.render())}deleteLink(t){this.links=this.links.filter(e=>e.id!==t),this.saveData(),this.render()}render(){var e;if(!this.container)return;let t=`
+      <div class="grid grid-cols-2 gap-3 mb-4">
+    `;this.links.forEach(s=>{t+=`
+        <div class="relative group">
+          <a href="${s.url}" target="_blank" class="flex items-center gap-3 p-3 bg-slate-50 hover:bg-primary-50 border border-slate-100 hover:border-primary-100 rounded-xl transition-all cursor-pointer">
+            <div class="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center shrink-0 border border-slate-100">
+              <i data-lucide="${s.icon}" class="w-4 h-4 ${s.color}"></i>
+            </div>
+            <span class="text-sm font-medium text-slate-700 truncate">${this.escapeHTML(s.title)}</span>
+          </a>
+          ${s.custom?`
+          <button class="absolute -top-2 -right-2 bg-white rounded-full p-1 border border-slate-200 text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 shadow-sm transition-all" data-delete-id="${s.id}">
+            <i data-lucide="x" class="w-3 h-3"></i>
+          </button>
+          `:""}
+        </div>
+      `}),t+=`
+      </div>
+      <div class="mt-4 pt-4 border-t border-slate-100">
+        <p class="text-xs text-slate-500 mb-2 font-medium">リンクを追加</p>
+        <div class="flex flex-col gap-2">
+          <input type="text" id="link-title" placeholder="サイト名" class="w-full rounded-lg border-slate-200 text-sm p-2 border outline-none focus:border-primary-500">
+          <div class="flex gap-2">
+            <input type="url" id="link-url" placeholder="URL (https://...)" class="flex-1 rounded-lg border-slate-200 text-sm p-2 border outline-none focus:border-primary-500">
+            <button id="btn-add-link" class="bg-slate-800 hover:bg-slate-900 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors shrink-0">
+              追加
+            </button>
+          </div>
+        </div>
+      </div>
+    `,this.container.innerHTML=t,window.lucide&&window.lucide.createIcons({root:this.container}),(e=this.container.querySelector("#btn-add-link"))==null||e.addEventListener("click",()=>{const s=this.container.querySelector("#link-title").value.trim(),r=this.container.querySelector("#link-url").value.trim();this.addLink(s,r)}),this.container.querySelectorAll("[data-delete-id]").forEach(s=>{s.addEventListener("click",r=>{this.deleteLink(r.currentTarget.dataset.deleteId)})})}escapeHTML(t){return t.replace(/[&<>'"]/g,e=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"})[e]||e)}}class S{constructor(t,e){this.container=document.getElementById(t),this.dataSource="data/lessons.json",this.settings=e,this.loadData()}get limit(){var t,e;return((e=(t=this.settings)==null?void 0:t.settings)==null?void 0:e.lessonsLimit)||4}async loadData(){try{const t=await fetch(this.dataSource);if(!t.ok)throw new Error("Data not found");const e=await t.json();this.lessons=e,this.render()}catch{this.container&&(this.container.innerHTML='<p class="text-slate-500 text-sm py-4 col-span-full">授業データが見つかりません。Markdownから変換スクリプトを実行してください。</p>')}}render(){if(!this.container||!this.lessons)return;if(!this.lessons.length){this.container.innerHTML='<p class="text-slate-500 text-sm py-4 col-span-full">授業データがありません。</p>';return}const t=this.lessons.slice(0,this.limit);let e="";t.forEach(s=>{const r=(s.tags||[]).slice(0,2).map(a=>`<span class="px-2 py-0.5 bg-primary-50 text-primary-600 rounded-full text-[10px] font-medium">${this.escapeHTML(a)}</span>`).join("");e+=`
+        <a href="${s.url}" class="block p-4 bg-slate-50 hover:bg-primary-50 border border-slate-100 hover:border-primary-100 rounded-xl transition-all group flex flex-col h-full cursor-pointer">
+          <div class="flex justify-between items-start mb-2">
+            <div class="flex flex-wrap gap-1">${r}</div>
+            <div class="text-[10px] text-slate-400 font-medium">${this.escapeHTML(s.date)}</div>
+          </div>
+          <h3 class="text-sm font-bold text-slate-800 group-hover:text-primary-600 transition-colors mb-1 line-clamp-1">${this.escapeHTML(s.title)}</h3>
+          <p class="text-xs text-slate-500 line-clamp-2 mt-auto">${this.escapeHTML(s.summary)}</p>
+        </a>
+      `}),this.container.innerHTML=e}escapeHTML(t){return t.replace(/[&<>'"]/g,e=>({"&":"&amp;","<":"&lt;",">":"&gt;","'":"&#39;",'"':"&quot;"})[e]||e)}}class B{constructor(){this.storageKey="class-portal-settings",this.defaultSettings={themeColor:"#0ea5e9",wallpaperMode:"pattern",wallpaperImage:"",wallpaperColor:"#f8fafc",portalTitle:"学習ポータル",cardOpacity:90,fontSize:"md",timetableDays:5,timetablePeriods:6,showPeriodTimes:!1,periodTimes:[{start:"08:50",end:"09:40"},{start:"09:50",end:"10:40"},{start:"10:50",end:"11:40"},{start:"13:00",end:"13:50"},{start:"14:00",end:"14:50"},{start:"15:00",end:"15:50"},{start:"16:00",end:"16:50"}],lessonsLimit:4},this.settings=this.loadData(),this.applySettings()}loadData(){const t=localStorage.getItem(this.storageKey),e={...this.defaultSettings};if(!t)return e;const s=JSON.parse(t);return{...e,...s,periodTimes:s.periodTimes||e.periodTimes}}saveData(){localStorage.setItem(this.storageKey,JSON.stringify(this.settings)),this.applySettings()}updateSetting(t,e){this.settings[t]=e,this.saveData()}hexToRgb(t){const e=/^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(t);return e?{r:parseInt(e[1],16),g:parseInt(e[2],16),b:parseInt(e[3],16)}:null}adjustColor(t,e){return"#"+t.replace(/^#/,"").replace(/../g,s=>("0"+Math.min(255,Math.max(0,parseInt(s,16)+e)).toString(16)).substr(-2))}applySettings(){const t=this.settings,e=document.body;let s=document.getElementById("dynamic-theme-styles");s||(s=document.createElement("style"),s.id="dynamic-theme-styles",document.head.appendChild(s));const r=(t.cardOpacity/100).toFixed(2);s.innerHTML=`
+      :root {
+        --tw-color-primary-500: ${t.themeColor};
+        --tw-color-primary-600: ${this.adjustColor(t.themeColor,-20)};
+        --tw-color-primary-50: ${this.adjustColor(t.themeColor,90)};
+        --tw-color-primary-100: ${this.adjustColor(t.themeColor,80)};
+      }
+      .bg-primary-500 { background-color: var(--tw-color-primary-500) !important; }
+      .bg-primary-600 { background-color: var(--tw-color-primary-600) !important; }
+      .bg-primary-50  { background-color: var(--tw-color-primary-50)  !important; }
+      .bg-primary-100 { background-color: var(--tw-color-primary-100) !important; }
+      .hover\\:bg-primary-50:hover  { background-color: var(--tw-color-primary-50)  !important; }
+      .hover\\:bg-primary-100:hover { background-color: var(--tw-color-primary-100) !important; }
+      .hover\\:bg-primary-700:hover { background-color: var(--tw-color-primary-600) !important; filter: brightness(0.9); }
+      .text-primary-500 { color: var(--tw-color-primary-500) !important; }
+      .text-primary-600 { color: var(--tw-color-primary-600) !important; }
+      .hover\\:text-primary-600:hover { color: var(--tw-color-primary-600) !important; }
+      .border-primary-500 { border-color: var(--tw-color-primary-500) !important; }
+      .border-primary-100 { border-color: var(--tw-color-primary-100) !important; }
+      .focus\\:border-primary-500:focus { border-color: var(--tw-color-primary-500) !important; }
+      section { background-color: rgba(255,255,255,${r}) !important; backdrop-filter: blur(8px); }
+      #main-header { background-color: rgba(255,255,255,${Math.min(1,parseFloat(r)+.1).toFixed(2)}) !important; }
+      ${t.fontSize==="sm"?"html { font-size: 14px; }":""}
+      ${t.fontSize==="md"?"html { font-size: 16px; }":""}
+      ${t.fontSize==="lg"?"html { font-size: 18px; }":""}
+    `,t.wallpaperMode==="image"&&t.wallpaperImage?(e.style.backgroundImage=`url(${t.wallpaperImage})`,e.style.backgroundSize="cover",e.style.backgroundPosition="center",e.style.backgroundAttachment="fixed",e.style.backgroundColor=""):t.wallpaperMode==="color"?(e.style.backgroundImage="none",e.style.backgroundColor=t.wallpaperColor||"#f8fafc"):(e.style.backgroundImage="radial-gradient(var(--tw-color-primary-100) 1px, transparent 1px)",e.style.backgroundSize="20px 20px",e.style.backgroundColor="#f8fafc");const a=document.querySelector("#main-header h1");a&&(a.textContent=t.portalTitle||"学習ポータル"),document.title=(t.portalTitle||"学習ポータル")+" - Dashboard"}}const d=new B,g=new L("timetable-container",d),x=new k("calendar-container"),D=new $("todo-list","todo-input","btn-add-todo"),M=new T("links-container"),C=new S("lessons-container",d);document.getElementById("btn-edit-timetable").addEventListener("click",o=>{g.toggleEdit(),o.target.textContent=g.isEditing?"完了":"編集"});const m=document.getElementById("settings-modal"),O=document.getElementById("btn-settings"),q=document.getElementById("btn-close-settings"),j=document.getElementById("btn-save-settings"),H=document.getElementById("btn-reset-settings"),v=document.querySelectorAll(".settings-tab"),z=document.querySelectorAll(".settings-panel");v.forEach(o=>{o.addEventListener("click",()=>{const t=o.dataset.tab;v.forEach(e=>{const s=e.dataset.tab===t;e.classList.toggle("bg-white",s),e.classList.toggle("shadow-sm",s),e.classList.toggle("text-primary-600",s),e.classList.toggle("text-slate-500",!s)}),z.forEach(e=>{e.classList.toggle("hidden",e.id!==`tab-${t}`)})})});document.querySelectorAll(".color-preset").forEach(o=>{o.addEventListener("click",()=>{document.getElementById("s-color").value=o.dataset.color})});document.getElementById("s-bg-mode").addEventListener("change",o=>{document.getElementById("s-bg-color-row").classList.toggle("hidden",o.target.value!=="color"),document.getElementById("s-bg-image-row").classList.toggle("hidden",o.target.value!=="image")});document.getElementById("s-opacity").addEventListener("input",o=>{document.getElementById("s-opacity-val").textContent=o.target.value});function w(o){var r;const t=document.getElementById("s-period-times-list"),e=parseInt(((r=document.getElementById("s-tt-periods"))==null?void 0:r.value)||6);let s="";for(let a=0;a<e;a++){const i=o[a]||{start:"",end:""};s+=`
+      <div class="flex items-center gap-2 text-sm">
+        <span class="text-slate-500 w-8 text-right shrink-0">${a+1}限</span>
+        <input type="time" class="period-time-start flex-1 border border-slate-200 rounded-lg px-2 py-1 text-sm focus:border-primary-500 outline-none" value="${i.start}" data-idx="${a}">
+        <span class="text-slate-400">〜</span>
+        <input type="time" class="period-time-end flex-1 border border-slate-200 rounded-lg px-2 py-1 text-sm focus:border-primary-500 outline-none" value="${i.end}" data-idx="${a}">
+      </div>
+    `}t.innerHTML=s}document.addEventListener("change",o=>{o.target.id==="s-tt-periods"&&w(d.settings.periodTimes)});function A(){var t;const o=d.settings;document.getElementById("s-portal-title").value=o.portalTitle||"",document.getElementById("s-color").value=o.themeColor,document.getElementById("s-bg-mode").value=o.wallpaperMode,document.getElementById("s-bg-color").value=o.wallpaperColor||"#f8fafc",document.getElementById("s-bg-color-row").classList.toggle("hidden",o.wallpaperMode!=="color"),document.getElementById("s-bg-image-row").classList.toggle("hidden",o.wallpaperMode!=="image"),document.getElementById("s-bg-url").value=(t=o.wallpaperImage)!=null&&t.startsWith("http")?o.wallpaperImage:"",document.getElementById("s-opacity").value=o.cardOpacity,document.getElementById("s-opacity-val").textContent=o.cardOpacity,document.getElementById("s-tt-days").value=o.timetableDays,document.getElementById("s-tt-periods").value=o.timetablePeriods,document.getElementById("s-tt-showtimes").checked=o.showPeriodTimes,document.querySelector(`input[name="s-fontsize"][value="${o.fontSize}"]`).checked=!0,document.getElementById("s-lessons-limit").value=o.lessonsLimit,w(o.periodTimes),m.classList.remove("hidden"),lucide.createIcons({root:m})}O.addEventListener("click",A);q.addEventListener("click",()=>m.classList.add("hidden"));m.addEventListener("click",o=>{o.target===m&&m.classList.add("hidden")});document.getElementById("s-bg-file").addEventListener("change",o=>{const t=o.target.files[0];if(t){const e=new FileReader;e.onload=s=>{document.getElementById("s-bg-url").value=s.target.result},e.readAsDataURL(t)}});j.addEventListener("click",()=>{const t=[...d.settings.periodTimes];document.querySelectorAll(".period-time-start").forEach(s=>{const r=parseInt(s.dataset.idx);t[r]||(t[r]={start:"",end:""}),t[r].start=s.value}),document.querySelectorAll(".period-time-end").forEach(s=>{const r=parseInt(s.dataset.idx);t[r]||(t[r]={start:"",end:""}),t[r].end=s.value});const e={portalTitle:document.getElementById("s-portal-title").value||"学習ポータル",themeColor:document.getElementById("s-color").value,wallpaperMode:document.getElementById("s-bg-mode").value,wallpaperColor:document.getElementById("s-bg-color").value,wallpaperImage:document.getElementById("s-bg-url").value,cardOpacity:parseInt(document.getElementById("s-opacity").value),timetableDays:parseInt(document.getElementById("s-tt-days").value),timetablePeriods:parseInt(document.getElementById("s-tt-periods").value),showPeriodTimes:document.getElementById("s-tt-showtimes").checked,periodTimes:t,fontSize:document.querySelector('input[name="s-fontsize"]:checked').value,lessonsLimit:parseInt(document.getElementById("s-lessons-limit").value)};Object.assign(d.settings,e),d.saveData(),g.render(),x.render(),M.render(),D.render(),C.render(),m.classList.add("hidden")});H.addEventListener("click",()=>{Object.assign(d.settings,d.defaultSettings),d.saveData(),g.render(),x.render(),m.classList.add("hidden")});lucide.createIcons();
