@@ -1,3 +1,5 @@
+import { escapeHTML } from './utils.js';
+
 export class Links {
   constructor(containerId) {
     this.container = document.getElementById(containerId);
@@ -21,34 +23,20 @@ export class Links {
   loadData() {
     const saved = localStorage.getItem(this.storageKey);
     if (!saved) return [...this.defaultLinks];
-
-    // デフォルトと保存済みをマージ（カスタム追加分）
     const parsed = JSON.parse(saved);
     const result = [...this.defaultLinks];
-    parsed.forEach(p => {
-      if (!result.find(d => d.id === p.id)) {
-        result.push(p);
-      }
-    });
+    parsed.forEach(p => { if (!result.find(d => d.id === p.id)) result.push(p); });
     return result;
   }
 
   saveData() {
-    // デフォルト以外を保存
     const custom = this.links.filter(l => !this.defaultLinks.find(d => d.id === l.id));
     localStorage.setItem(this.storageKey, JSON.stringify(custom));
   }
 
   addLink(title, url) {
     if (!title || !url) return;
-    this.links.push({
-      id: Date.now().toString(),
-      title,
-      url,
-      icon: 'link-2',
-      color: 'text-primary-500',
-      custom: true
-    });
+    this.links.push({ id: Date.now().toString(), title, url, icon: 'link-2', color: 'text-primary-500', custom: true });
     this.saveData();
     this.render();
   }
@@ -59,69 +47,54 @@ export class Links {
     this.render();
   }
 
-  render() {
-    if (!this.container) return;
-
-    let html = `
-      <div class="flex flex-col gap-2 mb-4">
-    `;
-
-    this.links.forEach(link => {
-      html += `
-        <div class="relative group">
-          <a href="${link.url}" target="_blank" class="flex items-center gap-3 p-3 bg-slate-50 hover:bg-primary-50 border border-slate-100 hover:border-primary-100 rounded-xl transition-all cursor-pointer">
-            <div class="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center shrink-0 border border-slate-100">
-              <i data-lucide="${link.icon}" class="w-4 h-4 ${link.color}"></i>
-            </div>
-            <span class="text-sm font-medium text-slate-700 truncate">${this.escapeHTML(link.title)}</span>
-          </a>
-          ${link.custom ? `
+  renderLink(link) {
+    return `
+      <div class="relative group">
+        <a href="${link.url}" target="_blank" class="flex items-center gap-3 p-3 bg-slate-50 hover:bg-primary-50 border border-slate-100 hover:border-primary-100 rounded-xl transition-all">
+          <div class="w-8 h-8 rounded-lg bg-white shadow-sm flex items-center justify-center shrink-0 border border-slate-100">
+            <i data-lucide="${link.icon}" class="w-4 h-4 ${link.color}"></i>
+          </div>
+          <span class="text-sm font-medium text-slate-700 truncate">${escapeHTML(link.title)}</span>
+        </a>
+        ${link.custom ? `
           <button class="absolute -top-2 -right-2 bg-white rounded-full p-1 border border-slate-200 text-slate-400 hover:text-red-500 opacity-0 group-hover:opacity-100 shadow-sm transition-all" data-delete-id="${link.id}">
             <i data-lucide="x" class="w-3 h-3"></i>
           </button>
-          ` : ''}
-        </div>
-      `;
-    });
-
-    html += `
+        ` : ''}
       </div>
-      <div class="mt-4 pt-4 border-t border-slate-100">
+    `;
+  }
+
+  render() {
+    if (!this.container) return;
+
+    this.container.innerHTML = `
+      <div class="flex flex-col gap-2 mb-4">
+        ${this.links.map(l => this.renderLink(l)).join('')}
+      </div>
+      <div class="pt-4 border-t border-slate-100">
         <p class="text-xs text-slate-500 mb-2 font-medium">リンクを追加</p>
         <div class="flex flex-col gap-2">
           <input type="text" id="link-title" placeholder="サイト名" class="w-full rounded-lg border-slate-200 text-sm p-2 border outline-none focus:border-primary-500">
           <div class="flex gap-2">
             <input type="url" id="link-url" placeholder="URL (https://...)" class="flex-1 rounded-lg border-slate-200 text-sm p-2 border outline-none focus:border-primary-500">
-            <button id="btn-add-link" class="bg-slate-800 hover:bg-slate-900 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors shrink-0">
-              追加
-            </button>
+            <button id="btn-add-link" class="bg-slate-800 hover:bg-slate-900 text-white px-3 py-2 rounded-lg text-sm font-medium transition-colors shrink-0">追加</button>
           </div>
         </div>
       </div>
     `;
 
-    this.container.innerHTML = html;
-
-    if (window.lucide) {
-      window.lucide.createIcons({ root: this.container });
-    }
+    if (window.lucide) window.lucide.createIcons({ root: this.container });
 
     this.container.querySelector('#btn-add-link')?.addEventListener('click', () => {
-      const title = this.container.querySelector('#link-title').value.trim();
-      const url = this.container.querySelector('#link-url').value.trim();
-      this.addLink(title, url);
+      this.addLink(
+        this.container.querySelector('#link-title').value.trim(),
+        this.container.querySelector('#link-url').value.trim()
+      );
     });
 
     this.container.querySelectorAll('[data-delete-id]').forEach(btn => {
-      btn.addEventListener('click', (e) => {
-        this.deleteLink(e.currentTarget.dataset.deleteId);
-      });
+      btn.addEventListener('click', () => this.deleteLink(btn.dataset.deleteId));
     });
-  }
-
-  escapeHTML(str) {
-    return str.replace(/[&<>'"]/g, tag => ({
-      '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
-    }[tag] || tag));
   }
 }
