@@ -31,9 +31,28 @@ export class SettingsModal {
             });
         });
 
-        // カラープリセット
+        // テーマカラープリセット
         document.querySelectorAll('.color-preset').forEach(btn => {
             btn.addEventListener('click', () => { document.getElementById('s-color').value = btn.dataset.color; });
+        });
+
+        // ヘッダーカラープリセット
+        document.querySelectorAll('.header-color-preset').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.getElementById('s-header-bg-color').value = btn.dataset.color;
+                this._updateHeaderPreviews(btn.dataset.color);
+            });
+        });
+
+        // ヘッダーカラーリセット
+        document.getElementById('btn-reset-header-color')?.addEventListener('click', () => {
+            document.getElementById('s-header-bg-color').value = '';
+            this._updateHeaderPreviews(this.settings.settings.themeColor);
+        });
+
+        // ヘッダーカラーピッカー変更時プレビュー更新
+        document.getElementById('s-header-bg-color')?.addEventListener('input', e => {
+            this._updateHeaderPreviews(e.target.value);
         });
 
         // 背景モード切替
@@ -108,7 +127,12 @@ export class SettingsModal {
 
         const hsInput = document.querySelector(`input[name="s-header-style"][value="${s.headerStyle || 'glass'}"]`);
         if (hsInput) hsInput.checked = true;
-        this._updateHeaderPreviews(s.themeColor);
+        // ヘッダー独自カラー
+        const hbcInput = document.getElementById('s-header-bg-color');
+        if (hbcInput) hbcInput.value = s.headerBgColor || '#0ea5e9';
+        // プレビュー: headerBgColorがあればそちらを使う
+        const previewColor = (s.headerBgColor && s.headerBgColor !== '') ? s.headerBgColor : s.themeColor;
+        this._updateHeaderPreviews(previewColor);
 
         this._buildPeriodTimeInputs(s.periodTimes);
         this.modal.classList.remove('hidden');
@@ -145,6 +169,7 @@ export class SettingsModal {
             fontSize: document.querySelector('input[name="s-fontsize"]:checked').value,
             lessonsLimit: parseInt($('s-lessons-limit').value),
             headerStyle: document.querySelector('input[name="s-header-style"]:checked')?.value || 'glass',
+            headerBgColor: document.getElementById('s-header-bg-color')?.value || '',
             widgetVisibility: {
                 timetable: $('w-timetable').checked,
                 lessons: $('w-lessons').checked,

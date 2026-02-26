@@ -25,6 +25,7 @@ export class Settings {
             ],
             lessonsLimit: 0,
             headerStyle: 'glass',
+            headerBgColor: '',     // 空文字 = themeColorに追随
             widgetVisibility: {
                 timetable: true,
                 lessons: true,
@@ -161,7 +162,8 @@ export class Settings {
         header.removeAttribute('class');
         const base = 'sticky top-0 z-50 transition-all duration-300';
         const hs = s.headerStyle || 'glass';
-        const color = s.themeColor;
+        // headerBgColor が設定されていればそちらを優先、未設定はthemeColor
+        const color = (s.headerBgColor && s.headerBgColor !== '') ? s.headerBgColor : s.themeColor;
 
         if (hs === 'glass') {
             header.className = `${base} bg-white/80 backdrop-blur-md shadow-sm`;
