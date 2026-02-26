@@ -112,20 +112,82 @@ export class Settings {
     `;
 
         // Apply wallpaper
-        if (s.wallpaperMode === 'image' && s.wallpaperImage) {
-            body.style.backgroundImage = `url(${s.wallpaperImage})`;
-            body.style.backgroundSize = 'cover';
-            body.style.backgroundPosition = 'center';
-            body.style.backgroundAttachment = 'fixed';
-            body.style.backgroundColor = '';
-        } else if (s.wallpaperMode === 'color') {
-            body.style.backgroundImage = 'none';
-            body.style.backgroundColor = s.wallpaperColor || '#f8fafc';
-        } else {
-            body.style.backgroundImage = `radial-gradient(var(--tw-color-primary-100) 1px, transparent 1px)`;
-            body.style.backgroundSize = '20px 20px';
-            body.style.backgroundColor = '#f8fafc';
-        }
+        const c = `var(--tw-color-primary-100)`;  // primary-100 color
+        const c5 = `var(--tw-color-primary-500)`;  // primary-500 color
+        const base = '#f8fafc';
+        body.style.backgroundAttachment = 'fixed';
+
+        const patterns = {
+            'image': () => {
+                if (!s.wallpaperImage) { patterns['pattern'](); return; }
+                body.style.backgroundImage = `url(${s.wallpaperImage})`;
+                body.style.backgroundSize = 'cover';
+                body.style.backgroundPosition = 'center';
+                body.style.backgroundColor = '';
+            },
+            'color': () => {
+                body.style.backgroundImage = 'none';
+                body.style.backgroundSize = '';
+                body.style.backgroundColor = s.wallpaperColor || base;
+            },
+            'pattern': () => {
+                // ドット（デフォルト）
+                body.style.backgroundImage = `radial-gradient(${c} 1px, transparent 1px)`;
+                body.style.backgroundSize = '20px 20px';
+                body.style.backgroundColor = base;
+            },
+            'grid': () => {
+                // グリッドライン
+                body.style.backgroundImage = `linear-gradient(${c} 1px, transparent 1px), linear-gradient(90deg, ${c} 1px, transparent 1px)`;
+                body.style.backgroundSize = '30px 30px';
+                body.style.backgroundColor = base;
+            },
+            'dots-lg': () => {
+                // 大きなドット
+                body.style.backgroundImage = `radial-gradient(${c} 2px, transparent 2px)`;
+                body.style.backgroundSize = '40px 40px';
+                body.style.backgroundColor = base;
+            },
+            'diagonal': () => {
+                // 斜線
+                body.style.backgroundImage = `repeating-linear-gradient(45deg, ${c} 0, ${c} 1px, transparent 0, transparent 50%)`;
+                body.style.backgroundSize = '16px 16px';
+                body.style.backgroundColor = base;
+            },
+            'cross': () => {
+                // クロスハッチ
+                body.style.backgroundImage = `repeating-linear-gradient(45deg, ${c} 0, ${c} 1px, transparent 0, transparent 50%), repeating-linear-gradient(-45deg, ${c} 0, ${c} 1px, transparent 0, transparent 50%)`;
+                body.style.backgroundSize = '14px 14px';
+                body.style.backgroundColor = base;
+            },
+            'wave': () => {
+                // 波ライン（横方向）
+                body.style.backgroundImage = `repeating-linear-gradient(0deg, ${c}, ${c} 1px, transparent 1px, transparent 20px), repeating-linear-gradient(90deg, ${c}, ${c} 1px, transparent 1px, transparent 20px)`;
+                body.style.backgroundSize = '20px 40px';
+                body.style.backgroundColor = base;
+            },
+            'triangle': () => {
+                // 三角形タイル
+                body.style.backgroundImage = `linear-gradient(135deg, ${c} 25%, transparent 25%) -10px 0, linear-gradient(225deg, ${c} 25%, transparent 25%) -10px 0, linear-gradient(315deg, ${c} 25%, transparent 25%), linear-gradient(45deg, ${c} 25%, transparent 25%)`;
+                body.style.backgroundSize = '20px 20px';
+                body.style.backgroundColor = base;
+            },
+            'checker': () => {
+                // チェッカーボード
+                body.style.backgroundImage = `repeating-conic-gradient(${c} 0% 25%, transparent 0% 50%)`;
+                body.style.backgroundSize = '24px 24px';
+                body.style.backgroundColor = base;
+            },
+            'gradient-v': () => {
+                // 縦グラデーション
+                body.style.backgroundImage = `linear-gradient(180deg, ${c} 0%, transparent 50%)`;
+                body.style.backgroundSize = '';
+                body.style.backgroundColor = base;
+            },
+        };
+
+        const fn = patterns[s.wallpaperMode] || patterns['pattern'];
+        fn();
 
         // Portal title
         const titleEl = document.querySelector('#main-header h1');
