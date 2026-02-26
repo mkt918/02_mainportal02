@@ -26,6 +26,7 @@ export class Settings {
             lessonsLimit: 0,
             headerStyle: 'glass',
             headerBgColor: '',     // 空文字 = themeColorに追随
+            layoutStyle: 'style1', // style1 or style2
             widgetVisibility: {
                 timetable: true,
                 lessons: true,
@@ -73,6 +74,7 @@ export class Settings {
         this._applyHeader(s);
         this._applyWidgets(s);
         this._applyTitle(s);
+        this._applyLayout(s);
     }
 
     /** CSS変数・カード透明度・フォントサイズ */
@@ -206,6 +208,14 @@ export class Settings {
             const el = document.querySelector(selector);
             if (el) el.style.display = (v[key] !== false) ? '' : 'none';
         }
+    }
+
+    /** レイアウトスタイル切替 */
+    _applyLayout(s) {
+        const main = document.getElementById('dashboard-main');
+        if (!main) return;
+        main.classList.remove('layout-style1', 'layout-style2');
+        main.classList.add('layout-' + (s.layoutStyle || 'style1'));
     }
 
     /** タイトル */

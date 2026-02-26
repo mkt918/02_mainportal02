@@ -127,6 +127,9 @@ export class SettingsModal {
 
         const hsInput = document.querySelector(`input[name="s-header-style"][value="${s.headerStyle || 'glass'}"]`);
         if (hsInput) hsInput.checked = true;
+        // レイアウトスタイル
+        const lsInput = document.querySelector(`input[name="s-layout-style"][value="${s.layoutStyle || 'style1'}"]`);
+        if (lsInput) lsInput.checked = true;
         // ヘッダー独自カラー
         const hbcInput = document.getElementById('s-header-bg-color');
         if (hbcInput) hbcInput.value = s.headerBgColor || '#0ea5e9';
@@ -170,6 +173,7 @@ export class SettingsModal {
             lessonsLimit: parseInt($('s-lessons-limit').value),
             headerStyle: document.querySelector('input[name="s-header-style"]:checked')?.value || 'glass',
             headerBgColor: document.getElementById('s-header-bg-color')?.value || '',
+            layoutStyle: document.querySelector('input[name="s-layout-style"]:checked')?.value || 'style1',
             widgetVisibility: {
                 timetable: $('w-timetable').checked,
                 lessons: $('w-lessons').checked,
