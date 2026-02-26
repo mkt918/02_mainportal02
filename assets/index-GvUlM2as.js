@@ -15,13 +15,13 @@
       </td>`}render(){if(!this.container)return;const{days:t,periods:e,periodTimes:r,showTimes:s}=this,a=`<tr>
       <th class="border-b border-r border-slate-200 p-1 text-center text-slate-400 font-medium bg-slate-50/50 w-10 text-[10px]">${s?"時限":""}</th>
       ${t.map(i=>`<th class="border-b border-slate-200 p-1 text-center text-slate-600 font-semibold bg-slate-50/50 text-xs">${i}</th>`).join("")}
-    </tr>`,o=e.map(i=>{const l=r[i-1],p=t.map(h=>{const g=this.data[i]&&this.data[i][h]||{subject:"",memo:""},u={subject:g.subject||"",memo:g.memo??g.room??""};return this.renderCell(u,i,h)}).join("");return`<tr>
+    </tr>`,o=e.map(i=>{const l=r[i-1],p=t.map(g=>{const h=this.data[i]&&this.data[i][g]||{subject:"",memo:""},u={subject:h.subject||"",memo:h.memo??h.room??""};return this.renderCell(u,i,g)}).join("");return`<tr>
         <td class="border-b border-r border-slate-200 p-1 text-center bg-slate-50/50">
           <div class="font-bold text-slate-600 text-[11px]">${i}</div>
           ${s&&l?`<div class="text-[9px] text-slate-400 leading-tight">${l.start}<br>${l.end}</div>`:""}
         </td>${p}
       </tr>`}).join("");this.container.innerHTML=`<table class="w-full text-xs text-left border-collapse min-w-[280px]">
-      <thead>${a}</thead><tbody>${o}</tbody></table>`,this.isEditing&&this.container.querySelectorAll("input").forEach(i=>{i.addEventListener("change",l=>{const{p,d:h,f:g}=l.target.dataset;this.updateCell(Number(p),h,g,l.target.value),g==="subject"&&(this.getSubjectColor(l.target.value),this.render())})})}}class k{constructor(t){this.container=document.getElementById(t),this.storageKey="class-portal-calendar-notes",this.currentDate=new Date,this.notes=this.loadNotes(),this.selectedDay=null,this.render()}loadNotes(){const t=localStorage.getItem(this.storageKey);return t?JSON.parse(t):{}}saveNotes(){localStorage.setItem(this.storageKey,JSON.stringify(this.notes))}noteKey(t,e,r){return`${t}-${String(e+1).padStart(2,"0")}-${String(r).padStart(2,"0")}`}getUpcomingNotes(t=3){const e=new Date;return e.setHours(0,0,0,0),Object.entries(this.notes).map(([r,s])=>({key:r,text:s,date:new Date(r+"T00:00:00")})).filter(r=>r.date>=e).sort((r,s)=>r.date-s.date).slice(0,t)}formatNoteDate(t){const e=["日","月","火","水","木","金","土"];return`${t.getMonth()+1}/${t.getDate()}（${e[t.getDay()]}）`}openNote(t){const e=this.currentDate.getFullYear(),r=this.currentDate.getMonth(),s=this.noteKey(e,r,t);this.selectedDay={year:e,month:r,day:t,key:s},this.renderNotePanel(s)}renderNotePanel(t){var a,o,i;const e=document.getElementById("calendar-note-panel");if(!e)return;const r=this.selectedDay,s=this.notes[t]||"";e.innerHTML=`
+      <thead>${a}</thead><tbody>${o}</tbody></table>`,this.isEditing&&this.container.querySelectorAll("input").forEach(i=>{i.addEventListener("change",l=>{const{p,d:g,f:h}=l.target.dataset;this.updateCell(Number(p),g,h,l.target.value),h==="subject"&&(this.getSubjectColor(l.target.value),this.render())})})}}class k{constructor(t){this.container=document.getElementById(t),this.storageKey="class-portal-calendar-notes",this.currentDate=new Date,this.notes=this.loadNotes(),this.selectedDay=null,this.render()}loadNotes(){const t=localStorage.getItem(this.storageKey);return t?JSON.parse(t):{}}saveNotes(){localStorage.setItem(this.storageKey,JSON.stringify(this.notes))}noteKey(t,e,r){return`${t}-${String(e+1).padStart(2,"0")}-${String(r).padStart(2,"0")}`}getUpcomingNotes(t=3){const e=new Date;return e.setHours(0,0,0,0),Object.entries(this.notes).map(([r,s])=>({key:r,text:s,date:new Date(r+"T00:00:00")})).filter(r=>r.date>=e).sort((r,s)=>r.date-s.date).slice(0,t)}formatNoteDate(t){const e=["日","月","火","水","木","金","土"];return`${t.getMonth()+1}/${t.getDate()}（${e[t.getDay()]}）`}openNote(t){const e=this.currentDate.getFullYear(),r=this.currentDate.getMonth(),s=this.noteKey(e,r,t);this.selectedDay={year:e,month:r,day:t,key:s},this.renderNotePanel(s)}renderNotePanel(t){var a,o,i;const e=document.getElementById("calendar-note-panel");if(!e)return;const r=this.selectedDay,s=this.notes[t]||"";e.innerHTML=`
       <div class="mt-3 pt-3 border-t border-slate-100">
         <div class="flex items-center justify-between mb-2">
           <span class="text-sm font-semibold text-slate-700">
@@ -40,14 +40,14 @@
         <span class="font-semibold text-primary-600 shrink-0 w-20">${this.formatNoteDate(r.date)}</span>
         <span class="text-slate-600 line-clamp-2">${r.text}</span>
       </div>
-    `).join("")}render(){if(!this.container)return;const t=this.currentDate.getFullYear(),e=this.currentDate.getMonth(),r=new Date,s=r.getFullYear(),a=r.getMonth(),o=r.getDate(),i=new Date(t,e+1,0).getDate(),p=(new Date(t,e,1).getDay()+6)%7,h=["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"],g=["月","火","水","木","金","土","日"];let u=`
+    `).join("")}render(){if(!this.container)return;const t=this.currentDate.getFullYear(),e=this.currentDate.getMonth(),r=new Date,s=r.getFullYear(),a=r.getMonth(),o=r.getDate(),i=new Date(t,e+1,0).getDate(),p=(new Date(t,e,1).getDay()+6)%7,g=["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"],h=["月","火","水","木","金","土","日"];let u=`
       <div class="flex items-center justify-between mb-3">
         <button class="cal-prev p-1 hover:bg-slate-100 rounded-lg text-slate-500 transition-colors"><i data-lucide="chevron-left" class="w-5 h-5"></i></button>
-        <div class="font-semibold text-slate-800">${t}年 ${h[e]}</div>
+        <div class="font-semibold text-slate-800">${t}年 ${g[e]}</div>
         <button class="cal-next p-1 hover:bg-slate-100 rounded-lg text-slate-500 transition-colors"><i data-lucide="chevron-right" class="w-5 h-5"></i></button>
       </div>
-      <div class="grid grid-cols-7 gap-1 text-center text-xs mb-1">
-    `;g.forEach((n,m)=>{u+=`<div class="font-medium ${m===5?"text-blue-500":m===6?"text-red-500":"text-slate-500"} pb-1">${n}</div>`}),u+='</div><div class="grid grid-cols-7 gap-1 text-sm">';for(let n=0;n<p;n++)u+="<div></div>";for(let n=1;n<=i;n++){const m=t===s&&e===a&&n===o,b=(p+n-1)%7,w=!!this.notes[this.noteKey(t,e,n)];let y="text-slate-700";b===5&&(y="text-blue-600"),b===6&&(y="text-red-600");let f="aspect-square flex flex-col items-center justify-center cursor-pointer transition-colors rounded-lg relative";m?f+=" bg-primary-500 text-white font-bold shadow-sm":f+=` hover:bg-slate-100 ${y}`,u+=`
+      <div class="grid grid-cols-7 gap-0.5 text-center text-[10px] mb-0.5">
+    `;h.forEach((n,m)=>{u+=`<div class="font-medium ${m===5?"text-blue-500":m===6?"text-red-500":"text-slate-400"} pb-0.5">${n}</div>`}),u+='</div><div class="grid grid-cols-7 gap-0.5 text-xs">';for(let n=0;n<p;n++)u+="<div></div>";for(let n=1;n<=i;n++){const m=t===s&&e===a&&n===o,b=(p+n-1)%7,w=!!this.notes[this.noteKey(t,e,n)];let y="text-slate-700";b===5&&(y="text-blue-600"),b===6&&(y="text-red-600");let f="w-7 h-7 flex flex-col items-center justify-center cursor-pointer transition-colors rounded-md relative mx-auto";m?f+=" bg-primary-500 text-white font-bold shadow-sm":f+=` hover:bg-slate-100 ${y}`,u+=`
         <div class="${f}" data-day="${n}">
           <span>${n}</span>
           ${w?`<span class="absolute bottom-0.5 w-1 h-1 rounded-full ${m?"bg-white/70":"bg-primary-400"}"></span>`:""}
@@ -69,16 +69,17 @@
       <div class="mb-4 p-3 bg-slate-50 rounded-xl border border-slate-100 space-y-2">
         <input type="text" id="todo-text" placeholder="タスクを入力..." class="w-full rounded-lg border border-slate-200 text-sm p-2 outline-none focus:border-primary-500">
         <div class="flex gap-2 items-center">
+          <label class="text-xs text-slate-500 shrink-0 font-medium">締切日：</label>
           <input type="date" id="todo-deadline" class="flex-1 rounded-lg border border-slate-200 text-sm p-2 outline-none focus:border-primary-500 text-slate-600">
           <label class="flex items-center gap-1 text-xs text-slate-500 cursor-pointer shrink-0">
-            <input type="checkbox" id="todo-no-deadline" class="accent-primary-500"> 締切なし
+            <input type="checkbox" id="todo-no-deadline" class="accent-primary-500"> なし
           </label>
         </div>
         <div class="flex gap-2">
-          <button id="btn-add-normal"   class="flex-1 bg-slate-700 hover:bg-slate-800 text-white py-2 rounded-lg text-sm font-medium transition-colors">通常に追加</button>
           <button id="btn-add-priority" class="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-1">
             <i data-lucide="alert-circle" class="w-4 h-4"></i>重要に追加<span class="text-xs opacity-80">(${t}/${this.MAX_PRIORITY})</span>
           </button>
+          <button id="btn-add-normal"   class="flex-1 bg-slate-700 hover:bg-slate-800 text-white py-2 rounded-lg text-sm font-medium transition-colors">通常に追加</button>
         </div>
       </div>
       <div class="grid grid-cols-2 gap-4">
