@@ -89,16 +89,17 @@ export class TodoList {
       <div class="mb-4 p-3 bg-slate-50 rounded-xl border border-slate-100 space-y-2">
         <input type="text" id="todo-text" placeholder="タスクを入力..." class="w-full rounded-lg border border-slate-200 text-sm p-2 outline-none focus:border-primary-500">
         <div class="flex gap-2 items-center">
+          <label class="text-xs text-slate-500 shrink-0 font-medium">締切日：</label>
           <input type="date" id="todo-deadline" class="flex-1 rounded-lg border border-slate-200 text-sm p-2 outline-none focus:border-primary-500 text-slate-600">
           <label class="flex items-center gap-1 text-xs text-slate-500 cursor-pointer shrink-0">
-            <input type="checkbox" id="todo-no-deadline" class="accent-primary-500"> 締切なし
+            <input type="checkbox" id="todo-no-deadline" class="accent-primary-500"> なし
           </label>
         </div>
         <div class="flex gap-2">
-          <button id="btn-add-normal"   class="flex-1 bg-slate-700 hover:bg-slate-800 text-white py-2 rounded-lg text-sm font-medium transition-colors">通常に追加</button>
           <button id="btn-add-priority" class="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-1">
             <i data-lucide="alert-circle" class="w-4 h-4"></i>重要に追加<span class="text-xs opacity-80">(${pCount}/${this.MAX_PRIORITY})</span>
           </button>
+          <button id="btn-add-normal"   class="flex-1 bg-slate-700 hover:bg-slate-800 text-white py-2 rounded-lg text-sm font-medium transition-colors">通常に追加</button>
         </div>
       </div>
       <div class="grid grid-cols-2 gap-4">

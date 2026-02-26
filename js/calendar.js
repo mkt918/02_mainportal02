@@ -127,13 +127,13 @@ export class Calendar {
         <div class="font-semibold text-slate-800">${year}年 ${monthNames[month]}</div>
         <button class="cal-next p-1 hover:bg-slate-100 rounded-lg text-slate-500 transition-colors"><i data-lucide="chevron-right" class="w-5 h-5"></i></button>
       </div>
-      <div class="grid grid-cols-7 gap-1 text-center text-xs mb-1">
+      <div class="grid grid-cols-7 gap-0.5 text-center text-[10px] mb-0.5">
     `;
     dayNames.forEach((d, i) => {
-      const color = i === 5 ? 'text-blue-500' : i === 6 ? 'text-red-500' : 'text-slate-500';
-      html += `<div class="font-medium ${color} pb-1">${d}</div>`;
+      const color = i === 5 ? 'text-blue-500' : i === 6 ? 'text-red-500' : 'text-slate-400';
+      html += `<div class="font-medium ${color} pb-0.5">${d}</div>`;
     });
-    html += `</div><div class="grid grid-cols-7 gap-1 text-sm">`;
+    html += `</div><div class="grid grid-cols-7 gap-0.5 text-xs">`;
 
     for (let i = 0; i < startOffset; i++) html += `<div></div>`;
 
@@ -145,7 +145,7 @@ export class Calendar {
       if (colIndex === 5) textColor = 'text-blue-600';
       if (colIndex === 6) textColor = 'text-red-600';
 
-      let classes = 'aspect-square flex flex-col items-center justify-center cursor-pointer transition-colors rounded-lg relative';
+      let classes = 'w-7 h-7 flex flex-col items-center justify-center cursor-pointer transition-colors rounded-md relative mx-auto';
       if (isToday) classes += ' bg-primary-500 text-white font-bold shadow-sm';
       else classes += ` hover:bg-slate-100 ${textColor}`;
 
