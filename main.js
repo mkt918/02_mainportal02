@@ -9,7 +9,7 @@ import { Settings } from './js/settings.js';
 const settings = new Settings();
 const timetable = new Timetable('timetable-container', settings);
 const calendar = new Calendar('calendar-container');
-const todo = new TodoList('todo-list', 'todo-input', 'btn-add-todo');
+const todo = new TodoList('todo-container');
 const links = new Links('links-container');
 const lessons = new Lessons('lessons-container', settings);
 
