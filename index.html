@@ -19,47 +19,37 @@
           <h1 class="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-indigo-600">
             学習ポータル</h1>
         </div>
-        <div class="flex items-center gap-4">
-          <button id="btn-settings"
-            class="p-2 text-slate-500 hover:text-primary-600 hover:bg-primary-50 rounded-full transition-all">
-            <i data-lucide="settings"></i>
-          </button>
-        </div>
+        <button id="btn-settings"
+          class="p-2 text-slate-500 hover:text-primary-600 hover:bg-primary-50 rounded-full transition-all">
+          <i data-lucide="settings"></i>
+        </button>
       </div>
     </header>
 
-    <!-- メインコンテンツ -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
         <!-- 左カラム -->
         <div class="lg:col-span-2 space-y-8">
           <!-- 時間割 -->
-          <section
-            class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-100 p-6 transition-colors duration-300"
+          <section class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-100 p-6"
             id="card-timetable">
             <div class="flex items-center justify-between mb-4">
               <h2 class="text-lg font-semibold flex items-center gap-2 text-slate-800">
-                <i data-lucide="calendar-days" class="text-primary-500"></i>
-                時間割
+                <i data-lucide="calendar-days" class="text-primary-500"></i>時間割
               </h2>
               <button id="btn-edit-timetable"
-                class="text-sm px-3 py-1.5 bg-primary-50 text-primary-600 rounded-lg font-medium hover:bg-primary-100 transition-colors">
-                編集
-              </button>
+                class="text-sm px-3 py-1.5 bg-primary-50 text-primary-600 rounded-lg font-medium hover:bg-primary-100 transition-colors">編集</button>
             </div>
             <div id="timetable-container" class="overflow-x-auto"></div>
           </section>
 
           <!-- 授業一覧 -->
-          <section
-            class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-100 p-6 transition-colors duration-300">
-            <div class="flex items-center justify-between mb-4">
-              <h2 class="text-lg font-semibold flex items-center gap-2 text-slate-800">
-                <i data-lucide="folder-open" class="text-primary-500"></i>
-                最近の授業
-              </h2>
-            </div>
+          <section class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-100 p-6"
+            id="section-lessons">
+            <h2 class="text-lg font-semibold flex items-center gap-2 text-slate-800 mb-4">
+              <i data-lucide="folder-open" class="text-primary-500"></i>最近の授業
+            </h2>
             <div id="lessons-container" class="grid grid-cols-1 md:grid-cols-2 gap-4">
               <p class="text-slate-500 text-sm py-4">読み込み中...</p>
             </div>
@@ -68,40 +58,34 @@
 
         <!-- 右カラム -->
         <div class="space-y-8">
-          <!-- カレンダー -->
-          <section
-            class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-100 p-6 transition-colors duration-300">
+          <section class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-100 p-6"
+            id="section-calendar">
             <h2 class="text-lg font-semibold flex items-center gap-2 text-slate-800 mb-4">
-              <i data-lucide="calendar" class="text-primary-500"></i>
-              カレンダー
+              <i data-lucide="calendar" class="text-primary-500"></i>カレンダー
             </h2>
             <div id="calendar-container"></div>
           </section>
 
-          <!-- ToDo -->
-          <section
-            class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-100 p-6 transition-colors duration-300">
+          <section class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-100 p-6"
+            id="section-todo">
             <h2 class="text-lg font-semibold flex items-center gap-2 text-slate-800 mb-4">
-              <i data-lucide="check-square" class="text-primary-500"></i>
-              ToDoリスト
+              <i data-lucide="check-square" class="text-primary-500"></i>ToDoリスト
             </h2>
             <div class="flex gap-2 mb-4">
               <input type="text" id="todo-input" placeholder="タスクを追加..."
-                class="flex-1 rounded-lg border-slate-200 shadow-sm text-sm p-2 border outline-none focus:border-primary-500">
+                class="flex-1 rounded-lg border border-slate-200 text-sm p-2 outline-none focus:border-primary-500">
               <button id="btn-add-todo"
                 class="bg-primary-600 hover:bg-primary-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">追加</button>
             </div>
             <ul id="todo-list" class="space-y-2"></ul>
           </section>
 
-          <!-- お役立ちリンク -->
-          <section
-            class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-100 p-6 transition-colors duration-300">
+          <section class="bg-white/80 backdrop-blur-sm rounded-2xl shadow-sm border border-slate-100 p-6"
+            id="section-links">
             <h2 class="text-lg font-semibold flex items-center gap-2 text-slate-800 mb-4">
-              <i data-lucide="link" class="text-primary-500"></i>
-              お役立ちリンク
+              <i data-lucide="link" class="text-primary-500"></i>お役立ちリンク
             </h2>
-            <div id="links-container" class="flex flex-col gap-3"></div>
+            <div id="links-container"></div>
           </section>
         </div>
       </div>
@@ -115,25 +99,25 @@
       <button id="btn-close-settings" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600">
         <i data-lucide="x"></i>
       </button>
-      <h2 class="text-xl font-bold mb-6 flex items-center gap-2">
-        <i data-lucide="settings" class="text-primary-500"></i>
-        カスタマイズ設定
+      <h2 class="text-xl font-bold mb-5 flex items-center gap-2">
+        <i data-lucide="settings" class="text-primary-500"></i>カスタマイズ設定
       </h2>
 
       <!-- タブ -->
-      <div class="flex gap-1 mb-6 bg-slate-100 rounded-xl p-1">
-        <button
-          class="settings-tab flex-1 py-2 text-sm font-medium rounded-lg transition-all bg-white shadow-sm text-primary-600"
+      <div class="flex gap-1 mb-5 bg-slate-100 rounded-xl p-1 text-xs">
+        <button class="settings-tab flex-1 py-2 font-medium rounded-lg bg-white shadow-sm text-primary-600"
           data-tab="appearance">🎨 デザイン</button>
-        <button
-          class="settings-tab flex-1 py-2 text-sm font-medium rounded-lg transition-all text-slate-500 hover:text-slate-700"
+        <button class="settings-tab flex-1 py-2 font-medium rounded-lg text-slate-500 hover:text-slate-700"
           data-tab="timetable">📅 時間割</button>
-        <button
-          class="settings-tab flex-1 py-2 text-sm font-medium rounded-lg transition-all text-slate-500 hover:text-slate-700"
+        <button class="settings-tab flex-1 py-2 font-medium rounded-lg text-slate-500 hover:text-slate-700"
           data-tab="display">🖥 表示</button>
+        <button class="settings-tab flex-1 py-2 font-medium rounded-lg text-slate-500 hover:text-slate-700"
+          data-tab="widgets">🧩 ウィジェット</button>
+        <button class="settings-tab flex-1 py-2 font-medium rounded-lg text-slate-500 hover:text-slate-700"
+          data-tab="colors">🎨 科目色</button>
       </div>
 
-      <!-- タブパネル: デザイン -->
+      <!-- デザイン -->
       <div id="tab-appearance" class="settings-panel space-y-4">
         <div>
           <label class="block text-sm font-medium text-slate-700 mb-1">ポータル名</label>
@@ -157,6 +141,10 @@
                 data-color="#ef4444"></button>
               <button class="color-preset w-7 h-7 rounded-full border-2 border-white shadow" style="background:#8b5cf6"
                 data-color="#8b5cf6"></button>
+              <button class="color-preset w-7 h-7 rounded-full border-2 border-white shadow" style="background:#ec4899"
+                data-color="#ec4899"></button>
+              <button class="color-preset w-7 h-7 rounded-full border-2 border-white shadow" style="background:#14b8a6"
+                data-color="#14b8a6"></button>
             </div>
           </div>
         </div>
@@ -187,7 +175,7 @@
         </div>
       </div>
 
-      <!-- タブパネル: 時間割 -->
+      <!-- 時間割 -->
       <div id="tab-timetable" class="settings-panel hidden space-y-4">
         <div>
           <label class="block text-sm font-medium text-slate-700 mb-1">曜日数</label>
@@ -212,20 +200,20 @@
           <label class="relative inline-flex items-center cursor-pointer">
             <input type="checkbox" id="s-tt-showtimes" class="sr-only peer">
             <div
-              class="w-11 h-6 bg-slate-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-500">
+              class="w-11 h-6 bg-slate-200 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-500">
             </div>
           </label>
         </div>
-        <div id="s-period-times-container" class="space-y-2">
-          <label class="block text-sm font-medium text-slate-700 mb-2">各時限の開始・終了時刻</label>
+        <div>
+          <label class="block text-sm font-medium text-slate-700 mb-2">各時限の時刻</label>
           <div id="s-period-times-list" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
         </div>
       </div>
 
-      <!-- タブパネル: 表示 -->
+      <!-- 表示 -->
       <div id="tab-display" class="settings-panel hidden space-y-4">
         <div>
-          <label class="block text-sm font-medium text-slate-700 mb-1">フォントサイズ</label>
+          <label class="block text-sm font-medium text-slate-700 mb-2">フォントサイズ</label>
           <div class="flex gap-3">
             <label
               class="flex-1 flex items-center justify-center gap-2 p-3 border rounded-xl cursor-pointer has-[:checked]:border-primary-500 has-[:checked]:bg-primary-50 transition">
@@ -253,6 +241,41 @@
             <option value="6">6件</option>
             <option value="8">8件</option>
           </select>
+        </div>
+      </div>
+
+      <!-- ウィジェット表示制御 -->
+      <div id="tab-widgets" class="settings-panel hidden space-y-2">
+        <p class="text-xs text-slate-500 mb-3">表示するセクションをオン/オフできます。</p>
+        <div class="space-y-3">
+          <div class="flex items-center justify-between py-2 border-b border-slate-100">
+            <label class="text-sm font-medium text-slate-700">📅 時間割</label>
+            <input type="checkbox" id="w-timetable" class="w-5 h-5 accent-primary-500 cursor-pointer">
+          </div>
+          <div class="flex items-center justify-between py-2 border-b border-slate-100">
+            <label class="text-sm font-medium text-slate-700">📚 最近の授業</label>
+            <input type="checkbox" id="w-lessons" class="w-5 h-5 accent-primary-500 cursor-pointer">
+          </div>
+          <div class="flex items-center justify-between py-2 border-b border-slate-100">
+            <label class="text-sm font-medium text-slate-700">📆 カレンダー</label>
+            <input type="checkbox" id="w-calendar" class="w-5 h-5 accent-primary-500 cursor-pointer">
+          </div>
+          <div class="flex items-center justify-between py-2 border-b border-slate-100">
+            <label class="text-sm font-medium text-slate-700">✅ ToDoリスト</label>
+            <input type="checkbox" id="w-todo" class="w-5 h-5 accent-primary-500 cursor-pointer">
+          </div>
+          <div class="flex items-center justify-between py-2">
+            <label class="text-sm font-medium text-slate-700">🔗 お役立ちリンク</label>
+            <input type="checkbox" id="w-links" class="w-5 h-5 accent-primary-500 cursor-pointer">
+          </div>
+        </div>
+      </div>
+
+      <!-- 科目カラー -->
+      <div id="tab-colors" class="settings-panel hidden">
+        <p class="text-xs text-slate-500 mb-4">時間割に登録された科目の色を設定できます。科目を入力すると自動で色が割り当てられます。</p>
+        <div id="subject-colors-list" class="space-y-3 max-h-72 overflow-y-auto pr-1">
+          <p class="text-sm text-slate-400 text-center py-4">時間割に科目を登録すると、ここに表示されます。</p>
         </div>
       </div>
 

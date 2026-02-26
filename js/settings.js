@@ -22,6 +22,13 @@ export class Settings {
                 { start: '16:00', end: '16:50' },
             ],
             lessonsLimit: 4,         // 2, 4, 6, 8
+            widgetVisibility: {
+                timetable: true,
+                lessons: true,
+                calendar: true,
+                todo: true,
+                links: true,
+            },
         };
 
         this.settings = this.loadData();
@@ -33,7 +40,12 @@ export class Settings {
         const base = { ...this.defaultSettings };
         if (!saved) return base;
         const parsed = JSON.parse(saved);
-        return { ...base, ...parsed, periodTimes: parsed.periodTimes || base.periodTimes };
+        return {
+            ...base,
+            ...parsed,
+            periodTimes: parsed.periodTimes || base.periodTimes,
+            widgetVisibility: { ...base.widgetVisibility, ...(parsed.widgetVisibility || {}) },
+        };
     }
 
     saveData() {
@@ -119,5 +131,19 @@ export class Settings {
         const titleEl = document.querySelector('#main-header h1');
         if (titleEl) titleEl.textContent = s.portalTitle || '学習ポータル';
         document.title = (s.portalTitle || '学習ポータル') + ' - Dashboard';
+
+        // Widget visibility
+        const v = s.widgetVisibility || {};
+        const widgetMap = {
+            timetable: '#card-timetable',
+            lessons: '#section-lessons',
+            calendar: '#section-calendar',
+            todo: '#section-todo',
+            links: '#section-links',
+        };
+        for (const [key, selector] of Object.entries(widgetMap)) {
+            const el = document.querySelector(selector);
+            if (el) el.style.display = (v[key] !== false) ? '' : 'none';
+        }
     }
 }

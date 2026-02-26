@@ -2,9 +2,17 @@ export class Timetable {
     constructor(containerId, settings) {
         this.container = document.getElementById(containerId);
         this.storageKey = 'class-portal-timetable';
+        this.colorStorageKey = 'class-portal-subject-colors';
         this.settings = settings;
         this.isEditing = false;
         this.data = this.loadData();
+        this.subjectColors = this.loadColors();
+
+        // Subject color preset palette
+        this.palette = [
+            '#bfdbfe', '#bbf7d0', '#fef08a', '#fecaca', '#ddd6fe',
+            '#fed7aa', '#cffafe', '#fbcfe8', '#e5e7eb', '#d1fae5',
+        ];
         this.render();
     }
 
@@ -29,7 +37,6 @@ export class Timetable {
     loadData() {
         const saved = localStorage.getItem(this.storageKey);
         if (saved) return JSON.parse(saved);
-
         const initial = {};
         for (let p = 1; p <= 7; p++) {
             initial[p] = {};
@@ -40,8 +47,37 @@ export class Timetable {
         return initial;
     }
 
+    loadColors() {
+        const saved = localStorage.getItem(this.colorStorageKey);
+        return saved ? JSON.parse(saved) : {};
+    }
+
     saveData() {
         localStorage.setItem(this.storageKey, JSON.stringify(this.data));
+    }
+
+    saveColors() {
+        localStorage.setItem(this.colorStorageKey, JSON.stringify(this.subjectColors));
+    }
+
+    // 科目名から色を自動割当（未設定の場合はパレットから順番に）
+    getSubjectColor(subject) {
+        if (!subject) return '';
+        if (this.subjectColors[subject]) return this.subjectColors[subject];
+
+        // Auto-assign from palette
+        const usedColors = Object.values(this.subjectColors);
+        const available = this.palette.filter(c => !usedColors.includes(c));
+        const color = available[0] || this.palette[Object.keys(this.subjectColors).length % this.palette.length];
+        this.subjectColors[subject] = color;
+        this.saveColors();
+        return color;
+    }
+
+    setSubjectColor(subject, color) {
+        this.subjectColors[subject] = color;
+        this.saveColors();
+        this.render();
     }
 
     toggleEdit() {
@@ -56,9 +92,19 @@ export class Timetable {
         this.saveData();
     }
 
+    // 登録されている全科目名のリストを取得
+    getAllSubjects() {
+        const subjects = new Set();
+        for (const p of Object.values(this.data)) {
+            for (const cell of Object.values(p)) {
+                if (cell.subject) subjects.add(cell.subject);
+            }
+        }
+        return [...subjects];
+    }
+
     render() {
         if (!this.container) return;
-
         const days = this.days;
         const periods = this.periods;
         const times = this.periodTimes;
@@ -68,10 +114,10 @@ export class Timetable {
       <table class="w-full text-sm text-left border-collapse min-w-[500px]">
         <thead>
           <tr>
-            <th class="border-b border-r border-slate-200 p-2 text-center text-slate-500 font-medium bg-slate-50/50 w-20">
-              ${showTimes ? '時間' : ''}
+            <th class="border-b border-r border-slate-200 p-2 text-center text-slate-400 font-medium bg-slate-50/50 w-20 text-xs">
+              ${showTimes ? '時限/時間' : ''}
             </th>
-            ${days.map(d => `<th class="border-b border-slate-200 p-2 text-center text-slate-600 font-medium bg-slate-50/50">${d}</th>`).join('')}
+            ${days.map(d => `<th class="border-b border-slate-200 p-2 text-center text-slate-600 font-semibold bg-slate-50/50">${d}</th>`).join('')}
           </tr>
         </thead>
         <tbody>
@@ -82,25 +128,30 @@ export class Timetable {
             html += `<tr>
         <td class="border-b border-r border-slate-200 p-2 text-center bg-slate-50/50">
           <div class="font-bold text-slate-600 text-sm">${p}限</div>
-          ${showTimes && t ? `<div class="text-[10px] text-slate-400 mt-0.5">${t.start}<br>${t.end}</div>` : ''}
+          ${showTimes && t ? `<div class="text-[10px] text-slate-400 mt-0.5 leading-tight">${t.start}<br>${t.end}</div>` : ''}
         </td>`;
 
             for (const d of days) {
                 const cell = (this.data[p] && this.data[p][d]) ? this.data[p][d] : { subject: '', room: '' };
+                const bgColor = cell.subject ? this.getSubjectColor(cell.subject) : '';
+                const bgStyle = bgColor ? `background-color: ${bgColor};` : '';
 
-                html += `<td class="border-b border-slate-200 p-1 text-center transition-colors hover:bg-slate-50/50">`;
+                html += `<td class="border-b border-slate-200 p-1 text-center transition-colors" style="${bgStyle}">`;
+
                 if (this.isEditing) {
                     html += `
             <div class="flex flex-col gap-1">
-              <input type="text" class="w-full text-center border border-slate-200 rounded px-1 py-0.5 text-slate-800 text-sm focus:border-primary-500 outline-none" value="${cell.subject}" placeholder="科目" data-p="${p}" data-d="${d}" data-f="subject">
-              <input type="text" class="w-full text-center border border-slate-200 rounded px-1 text-xs text-slate-500 focus:border-primary-500 outline-none" value="${cell.room}" placeholder="教室" data-p="${p}" data-d="${d}" data-f="room">
+              <input type="text" class="w-full text-center border border-slate-300 rounded px-1 py-0.5 text-slate-800 text-sm focus:border-primary-500 outline-none bg-white/80" 
+                value="${cell.subject}" placeholder="科目" data-p="${p}" data-d="${d}" data-f="subject">
+              <input type="text" class="w-full text-center border border-slate-200 rounded px-1 text-xs text-slate-500 focus:border-primary-500 outline-none bg-white/60" 
+                value="${cell.room}" placeholder="教室" data-p="${p}" data-d="${d}" data-f="room">
             </div>
           `;
                 } else {
                     html += `
             <div class="min-h-[3rem] flex flex-col items-center justify-center px-1">
-              <div class="font-medium text-slate-800 text-sm ${!cell.subject ? 'text-slate-300' : ''}">${cell.subject || '　'}</div>
-              ${cell.room ? `<div class="text-[10px] text-slate-400 mt-0.5">${cell.room}</div>` : ''}
+              <div class="font-semibold text-slate-800 text-sm ${!cell.subject ? 'text-slate-300' : ''}">${cell.subject || '　'}</div>
+              ${cell.room ? `<div class="text-[10px] text-slate-500 mt-0.5">${cell.room}</div>` : ''}
             </div>
           `;
                 }
@@ -117,6 +168,11 @@ export class Timetable {
                 input.addEventListener('change', (e) => {
                     const { p, d, f } = e.target.dataset;
                     this.updateCell(Number(p), d, f, e.target.value);
+                    // 科目名が変わったら色を自動付与して再描画
+                    if (f === 'subject') {
+                        this.getSubjectColor(e.target.value);
+                        this.render();
+                    }
                 });
             });
         }
