@@ -4,8 +4,10 @@ const SCRIPTS_DIR = __dirname;
 const LESSONS_DIR = path.join(SCRIPTS_DIR, '../../lessons');
 const OUTPUT_DIR = path.join(SCRIPTS_DIR, '../../../note');
 const DATA_DIR = path.join(SCRIPTS_DIR, '../../../data');
+const PUBLIC_DATA_DIR = path.join(SCRIPTS_DIR, '../../../public/data');
 const TEMPLATES_DIR = path.join(SCRIPTS_DIR, '../templates');
 const LESSONS_JSON = path.join(DATA_DIR, 'lessons.json');
+const LESSONS_JSON_PUBLIC = path.join(PUBLIC_DATA_DIR, 'lessons.json');
 
 const GAS_URL = 'https://script.google.com/macros/s/AKfycbwK_kN6pEX0yKueKISvFptwGvWZ1bKiWcIityL_XA2AlayPgj131bQdJlN4XitGD950dA/exec';
 
@@ -26,8 +28,10 @@ module.exports = {
     LESSONS_DIR,
     OUTPUT_DIR,
     DATA_DIR,
+    PUBLIC_DATA_DIR,
     TEMPLATES_DIR,
     LESSONS_JSON,
+    LESSONS_JSON_PUBLIC,
     GAS_URL,
     REGEX
 };

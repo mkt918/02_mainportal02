@@ -16,12 +16,19 @@ export class Calendar {
         const year = this.currentDate.getFullYear();
         const month = this.currentDate.getMonth();
         const today = new Date();
+        const todayY = today.getFullYear(), todayM = today.getMonth(), todayD = today.getDate();
 
-        const firstDay = new Date(year, month, 1).getDay();
         const daysInMonth = new Date(year, month + 1, 0).getDate();
 
+        // 月曜始まり用: 0=日 → 0=月として日付オフセットを計算
+        // firstDayOfWeek: 0=Sun,1=Mon,...,6=Sat
+        // 月曜始まりのオフセット = (firstDayOfWeek + 6) % 7
+        const rawFirstDay = new Date(year, month, 1).getDay(); // 0=Sun
+        const startOffset = (rawFirstDay + 6) % 7; // 月曜始まりの空白数
+
         const monthNames = ["1月", "2月", "3月", "4月", "5月", "6月", "7月", "8月", "9月", "10月", "11月", "12月"];
-        const dayNames = ["日", "月", "火", "水", "木", "金", "土"];
+        // 月曜始まりの曜日ラベル
+        const dayNames = ["月", "火", "水", "木", "金", "土", "日"];
 
         let html = `
       <div class="flex items-center justify-between mb-4">
@@ -32,30 +39,34 @@ export class Calendar {
       <div class="grid grid-cols-7 gap-1 text-center text-xs mb-2">
     `;
 
-        // 曜日ヘッダー
+        // 曜日ヘッダー（月〜日）
         dayNames.forEach((d, i) => {
-            const color = i === 0 ? 'text-red-500' : i === 6 ? 'text-blue-500' : 'text-slate-500';
+            // 月曜(0)〜金曜(4)は通常色、土曜(5)は青、日曜(6)は赤
+            const color = i === 5 ? 'text-blue-500' : i === 6 ? 'text-red-500' : 'text-slate-500';
             html += `<div class="font-medium ${color} pb-2">${d}</div>`;
         });
         html += `</div><div class="grid grid-cols-7 gap-1 text-sm">`;
 
-        // 空白
-        for (let i = 0; i < firstDay; i++) {
+        // 空白マス（月曜始まりのオフセット）
+        for (let i = 0; i < startOffset; i++) {
             html += `<div></div>`;
         }
 
-        // 日付
+        // 日付マス
         for (let day = 1; day <= daysInMonth; day++) {
-            const isToday = year === today.getFullYear() && month === today.getMonth() && day === today.getDate();
-            const currentDayOfWeek = (firstDay + day - 1) % 7;
+            const isToday = year === todayY && month === todayM && day === todayD;
+            // 月曜始まりでの曜日インデックス: 0=月,...,5=土,6=日
+            const colIndex = (startOffset + day - 1) % 7;
             let textColor = 'text-slate-700';
-            if (currentDayOfWeek === 0) textColor = 'text-red-600';
-            if (currentDayOfWeek === 6) textColor = 'text-blue-600';
+            if (colIndex === 5) textColor = 'text-blue-600'; // 土
+            if (colIndex === 6) textColor = 'text-red-600';  // 日
 
-            const bgClass = isToday ? 'bg-primary-500 text-white font-bold rounded-lg shadow-sm' : 'hover:bg-slate-100 rounded-lg';
+            const bgClass = isToday
+                ? 'bg-primary-500 text-white font-bold rounded-lg shadow-sm'
+                : `hover:bg-slate-100 rounded-lg ${textColor}`;
 
             html += `
-        <div class="aspect-square flex items-center justify-center cursor-pointer transition-colors ${bgClass} ${isToday ? '' : textColor}">
+        <div class="aspect-square flex items-center justify-center cursor-pointer transition-colors ${bgClass}">
           ${day}
         </div>
       `;
@@ -64,7 +75,6 @@ export class Calendar {
         html += `</div>`;
         this.container.innerHTML = html;
 
-        // lucide icons の再描画対応が必要なため
         if (window.lucide) {
             window.lucide.createIcons({ root: this.container });
         }

@@ -1,8 +1,13 @@
 export class Lessons {
-    constructor(containerId) {
+    constructor(containerId, settings) {
         this.container = document.getElementById(containerId);
         this.dataSource = 'data/lessons.json';
+        this.settings = settings;
         this.loadData();
+    }
+
+    get limit() {
+        return this.settings?.settings?.lessonsLimit || 4;
     }
 
     async loadData() {
@@ -10,30 +15,25 @@ export class Lessons {
             const response = await fetch(this.dataSource);
             if (!response.ok) throw new Error('Data not found');
             const data = await response.json();
-            this.render(data);
+            this.lessons = data;
+            this.render();
         } catch (error) {
-            console.error('Failed to load lessons', error);
             if (this.container) {
                 this.container.innerHTML = '<p class="text-slate-500 text-sm py-4 col-span-full">授業データが見つかりません。Markdownから変換スクリプトを実行してください。</p>';
             }
         }
     }
 
-    render(lessons) {
-        if (!this.container) return;
-
-        if (!lessons || lessons.length === 0) {
+    render() {
+        if (!this.container || !this.lessons) return;
+        if (!this.lessons.length) {
             this.container.innerHTML = '<p class="text-slate-500 text-sm py-4 col-span-full">授業データがありません。</p>';
             return;
         }
 
+        const displayLessons = this.lessons.slice(0, this.limit);
         let html = '';
-
-        // Display top 4 recent lessons
-        const displayLessons = lessons.slice(0, 4);
-
         displayLessons.forEach(lesson => {
-            // Tags badge
             const tagsHtml = (lesson.tags || []).slice(0, 2).map(tag =>
                 `<span class="px-2 py-0.5 bg-primary-50 text-primary-600 rounded-full text-[10px] font-medium">${this.escapeHTML(tag)}</span>`
             ).join('');
@@ -49,7 +49,6 @@ export class Lessons {
         </a>
       `;
         });
-
         this.container.innerHTML = html;
     }
 

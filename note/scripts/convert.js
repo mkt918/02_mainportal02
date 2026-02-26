@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const { marked } = require('marked');
 
-const { LESSONS_DIR, OUTPUT_DIR, LESSONS_JSON } = require('./lib/config');
+const { LESSONS_DIR, OUTPUT_DIR, LESSONS_JSON, LESSONS_JSON_PUBLIC, PUBLIC_DATA_DIR } = require('./lib/config');
 const { formatDate, formatPeriod, fixUnconvertedMarkdown } = require('./lib/utils');
 const { parseMarkdownFile } = require('./lib/parser');
 const { convertQuizToHTML } = require('./lib/quiz');
@@ -75,7 +75,13 @@ function main() {
 
     // lessons.jsonを更新
     lessonsData.sort((a, b) => new Date(b.date) - new Date(a.date));
-    fs.writeFileSync(LESSONS_JSON, JSON.stringify(lessonsData, null, 2), 'utf-8');
+    const jsonContent = JSON.stringify(lessonsData, null, 2);
+    fs.writeFileSync(LESSONS_JSON, jsonContent, 'utf-8');
+    // public/data/にも同期（Viteビルド用）
+    if (!fs.existsSync(PUBLIC_DATA_DIR)) {
+        fs.mkdirSync(PUBLIC_DATA_DIR, { recursive: true });
+    }
+    fs.writeFileSync(LESSONS_JSON_PUBLIC, jsonContent, 'utf-8');
     console.log(`\n✓ lessons.jsonを更新しました (${lessonsData.length}件)`);
 
     console.log('\n🎉 変換が完了しました！');
