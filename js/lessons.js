@@ -1,5 +1,7 @@
 import { escapeHTML } from './utils.js';
 
+const PAGE_SIZE = 10;
+
 export class Lessons {
     constructor(containerId, settings) {
         this.container = document.getElementById(containerId);
@@ -7,6 +9,7 @@ export class Lessons {
         this.settings = settings;
         this.lessons = [];
         this.activeFilter = 'all';
+        this.currentPage = 0;   // 0-indexed
         this.loadData();
     }
 
@@ -65,6 +68,28 @@ export class Lessons {
     `;
     }
 
+    renderPager(total, page) {
+        if (total <= PAGE_SIZE) return `<p class="text-xs text-slate-400 text-center mt-3">全${total}件</p>`;
+        const totalPages = Math.ceil(total / PAGE_SIZE);
+        const from = page * PAGE_SIZE + 1;
+        const to = Math.min((page + 1) * PAGE_SIZE, total);
+        const prevDis = page === 0;
+        const nextDis = page >= totalPages - 1;
+        const btnBase = 'pager-btn flex items-center gap-1 px-3 py-1.5 text-xs font-semibold rounded-lg transition-all';
+        const btnOn = 'text-primary-600 bg-primary-50 hover:bg-primary-100';
+        const btnOff = 'text-slate-300 cursor-not-allowed bg-slate-50';
+        return `
+      <div class="flex items-center justify-between mt-4 pt-3 border-t border-slate-100">
+        <button class="${btnBase} ${prevDis ? btnOff : btnOn}" data-pager="-1" ${prevDis ? 'disabled' : ''}>
+          ← 前の${PAGE_SIZE}件
+        </button>
+        <span class="text-xs text-slate-400 font-medium">${from}〜${to} / 全${total}件</span>
+        <button class="${btnBase} ${nextDis ? btnOff : btnOn}" data-pager="1" ${nextDis ? 'disabled' : ''}>
+          次の${PAGE_SIZE}件 →
+        </button>
+      </div>`;
+    }
+
     render() {
         if (!this.container) return;
         if (!this.lessons.length) {
@@ -73,22 +98,40 @@ export class Lessons {
         }
 
         const filtered = this.getFiltered();
-        const cards = filtered.length
-            ? filtered.map(l => this.renderCard(l)).join('')
+        const totalPages = Math.ceil(filtered.length / PAGE_SIZE) || 1;
+        if (this.currentPage >= totalPages) this.currentPage = Math.max(0, totalPages - 1);
+
+        const pageItems = filtered.slice(
+            this.currentPage * PAGE_SIZE,
+            (this.currentPage + 1) * PAGE_SIZE
+        );
+
+        const cards = pageItems.length
+            ? pageItems.map(l => this.renderCard(l)).join('')
             : '<p class="text-slate-400 text-sm py-6 text-center col-span-full">この科目の授業がありません。</p>';
-        const count = `<p class="text-xs text-slate-400 text-center mt-3">全${this.lessons.length}件中 ${filtered.length}件表示</p>`;
 
         this.container.innerHTML = `
       ${this.renderFilterTabs()}
       <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">${cards}</div>
-      ${count}
+      ${this.renderPager(filtered.length, this.currentPage)}
     `;
 
+        // フィルタ
         this.container.querySelectorAll('.lesson-filter-btn, .lesson-tag-btn').forEach(btn => {
             btn.addEventListener('click', e => {
                 e.preventDefault(); e.stopPropagation();
                 this.activeFilter = btn.dataset.filter;
+                this.currentPage = 0;
                 this.render();
+            });
+        });
+
+        // ページャー
+        this.container.querySelectorAll('.pager-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                this.currentPage += parseInt(btn.dataset.pager);
+                this.render();
+                this.container.closest('section')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
             });
         });
     }
