@@ -90,6 +90,12 @@ export class Settings {
             document.head.appendChild(styleTag);
         }
 
+        // colored/gradient のときはヘッダー背景を !important で上書きしない
+        const hs = s.headerStyle || 'glass';
+        const headerBgRule = (hs === 'colored' || hs === 'gradient')
+            ? ''  // _applyHeader に任せる
+            : `#main-header { background-color: rgba(255,255,255,${Math.min(1, parseFloat(baseOpacity) + 0.1).toFixed(2)}) !important; }`;
+
         styleTag.textContent = `
       :root {
         --tw-color-primary-50:  rgba(${rgb.r},${rgb.g},${rgb.b},0.05);
@@ -116,7 +122,7 @@ export class Settings {
       .border-primary-100 { border-color: var(--tw-color-primary-100) !important; }
       .focus\\:border-primary-500:focus { border-color: var(--tw-color-primary-500) !important; }
       section { background-color: rgba(255,255,255,${baseOpacity}) !important; backdrop-filter: blur(8px); }
-      #main-header { background-color: rgba(255,255,255,${Math.min(1, parseFloat(baseOpacity) + 0.1).toFixed(2)}) !important; }
+      ${headerBgRule}
       ${s.fontSize === 'sm' ? 'html { font-size: 14px; }' : ''}
       ${s.fontSize === 'md' ? 'html { font-size: 16px; }' : ''}
       ${s.fontSize === 'lg' ? 'html { font-size: 18px; }' : ''}
@@ -162,36 +168,53 @@ export class Settings {
         const header = document.getElementById('main-header');
         if (!header) return;
         header.removeAttribute('class');
+        header.style.cssText = '';  // まず全リセット
         const base = 'sticky top-0 z-50 transition-all duration-300';
         const hs = s.headerStyle || 'glass';
-        // headerBgColor が設定されていればそちらを優先、未設定はthemeColor
         const color = (s.headerBgColor && s.headerBgColor !== '') ? s.headerBgColor : s.themeColor;
 
         if (hs === 'glass') {
             header.className = `${base} bg-white/80 backdrop-blur-md shadow-sm`;
-            header.style.cssText = '';
         } else if (hs === 'solid') {
-            header.className = `${base} bg-white shadow-md border-b border-slate-200`;
-            header.style.cssText = '';
+            header.className = `${base} shadow-md border-b border-slate-200`;
+            header.style.backgroundColor = 'white';
         } else if (hs === 'colored') {
             header.className = `${base} shadow-lg`;
             header.style.backgroundColor = color;
-            header.style.backgroundImage = '';
+            header.style.backgroundImage = 'none';
         } else if (hs === 'gradient') {
             header.className = `${base} shadow-md`;
-            header.style.backgroundColor = '';
-            header.style.backgroundImage = `linear-gradient(135deg, ${color}, ${this._adjustColor(color, -40)})`;
+            header.style.backgroundImage = `linear-gradient(135deg, ${color} 0%, ${this._adjustColor(color, -50)} 100%)`;
         }
 
+        // テキスト色: colored/gradient のとき輝度判定で白/黒を自動切替
         const h1 = header.querySelector('h1');
-        if (h1) {
-            if (hs === 'colored' || hs === 'gradient') {
-                h1.style.webkitTextFillColor = 'white';
+        const settingsBtn = header.querySelector('#btn-settings');
+        if (hs === 'colored' || hs === 'gradient') {
+            const bright = this._isLight(color);
+            const textColor = bright ? '#1e293b' : 'white';
+            if (h1) {
+                h1.style.webkitTextFillColor = textColor;
                 h1.classList.remove('bg-clip-text', 'text-transparent', 'bg-gradient-to-r');
-            } else {
-                h1.style.webkitTextFillColor = '';
             }
+            if (settingsBtn) settingsBtn.style.color = textColor;
+        } else {
+            if (h1) {
+                h1.style.webkitTextFillColor = '';
+                // グラデーションクラスを戻す
+                h1.classList.add('bg-clip-text', 'text-transparent', 'bg-gradient-to-r');
+            }
+            if (settingsBtn) settingsBtn.style.color = '';
         }
+    }
+
+    /** 色が明るいかどうかを輝度で判定 */
+    _isLight(hex) {
+        const rgb = this._hexToRgb(hex);
+        if (!rgb) return true;
+        // 相対輝度 (0〜255)
+        const luminance = 0.299 * rgb.r + 0.587 * rgb.g + 0.114 * rgb.b;
+        return luminance > 160;
     }
 
     /** ウィジェット表示制御 */
