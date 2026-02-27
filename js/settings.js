@@ -162,20 +162,34 @@ export class Settings {
 
         // テキスト色: colored/gradient のとき輝度判定で白/黒を自動切替
         const h1 = header.querySelector('h1');
+        const triviaEl = document.getElementById('header-trivia');
         const settingsBtn = header.querySelector('#btn-settings');
+        const reactionBtn = header.querySelector('#btn-reaction-history');
         if (hs === 'colored' || hs === 'gradient') {
             const textColor = isLightColor(color) ? '#1e293b' : 'white';
             if (h1) {
                 h1.style.webkitTextFillColor = textColor;
                 h1.classList.remove('bg-clip-text', 'text-transparent', 'bg-gradient-to-r');
             }
+            if (triviaEl) {
+                triviaEl.style.webkitTextFillColor = textColor;
+                triviaEl.classList.remove('bg-clip-text', 'text-transparent', 'bg-gradient-to-r',
+                    'from-primary-600', 'to-indigo-600');
+            }
             if (settingsBtn) settingsBtn.style.color = textColor;
+            if (reactionBtn) reactionBtn.style.color = textColor;
         } else {
             if (h1) {
                 h1.style.webkitTextFillColor = '';
                 h1.classList.add('bg-clip-text', 'text-transparent', 'bg-gradient-to-r');
             }
+            if (triviaEl) {
+                triviaEl.style.webkitTextFillColor = '';
+                triviaEl.classList.add('bg-clip-text', 'text-transparent', 'bg-gradient-to-r',
+                    'from-primary-600', 'to-indigo-600');
+            }
             if (settingsBtn) settingsBtn.style.color = '';
+            if (reactionBtn) reactionBtn.style.color = '';
         }
     }
 
@@ -184,10 +198,10 @@ export class Settings {
         const v = s.widgetVisibility || {};
         const map = {
             timetable: SELECTORS.CARD_TIMETABLE,
-            lessons:   SELECTORS.SECTION_LESSONS,
-            calendar:  SELECTORS.SECTION_CAL,
-            todo:      SELECTORS.SECTION_TODO,
-            links:     SELECTORS.SECTION_LINKS,
+            lessons: SELECTORS.SECTION_LESSONS,
+            calendar: SELECTORS.SECTION_CAL,
+            todo: SELECTORS.SECTION_TODO,
+            links: SELECTORS.SECTION_LINKS,
         };
         for (const [key, selector] of Object.entries(map)) {
             const el = document.querySelector(selector);
