@@ -70,7 +70,6 @@ export async function initTrivia() {
 
     // ─── クリックで手動切替 ──────────────────────
     el.style.cursor = 'pointer';
-    el.title = 'クリックで次のトリビアへ';
     el.addEventListener('click', () => {
         clearInterval(timer);
         showItem(pickRandom());
