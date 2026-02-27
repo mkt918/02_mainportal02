@@ -20,12 +20,14 @@
             学習ポータル</h1>
         </div>
         <div class="flex items-center gap-1">
+          <!-- リアクションシート履歴ボタン -->
           <button id="btn-reaction-history"
             class="p-2 text-slate-500 hover:text-primary-600 hover:bg-primary-50 rounded-full transition-all relative"
-            title="リアクションシート送信履歴">
+            title="リアクションシート 送信履歴">
             <i data-lucide="clipboard-list" class="w-4 h-4"></i>
-            <span id="reaction-badge"
-              class="hidden absolute -top-0.5 -right-0.5 w-4 h-4 bg-red-500 text-white text-[9px] font-bold rounded-full flex items-center justify-center"></span>
+            <span id="reaction-badge" class="hidden absolute -top-0.5 -right-0.5 min-w-[1rem] h-4 px-0.5 bg-red-500 text-white
+                     text-[9px] font-bold rounded-full flex items-center justify-center leading-none">
+            </span>
           </button>
           <button id="btn-settings"
             class="p-2 text-slate-500 hover:text-primary-600 hover:bg-primary-50 rounded-full transition-all">
@@ -469,15 +471,15 @@
     </div>
   </div>
 
+  <script type="module" src="/main.js"></script>
+
   <!-- ===== リアクションシート履歴モーダル ===== -->
   <div id="reaction-modal" class="fixed inset-0 z-[200] hidden">
-    <!-- オーバーレイ -->
     <div id="reaction-overlay" class="absolute inset-0 bg-black/40 backdrop-blur-sm"></div>
-    <!-- パネル -->
-    <div class="absolute right-4 top-16 w-[480px] max-w-[calc(100vw-2rem)] max-h-[80vh] flex flex-col
+    <div class="absolute right-4 top-16 w-[620px] max-w-[calc(100vw-2rem)] max-h-[82vh] flex flex-col
                 bg-white rounded-2xl shadow-2xl border border-slate-100 overflow-hidden">
-      <!-- ヘッダー -->
-      <div class="flex items-center justify-between px-5 py-4 border-b border-slate-100 shrink-0">
+      <!-- モーダルヘッダー -->
+      <div class="flex items-center justify-between px-5 py-3.5 border-b border-slate-100 shrink-0">
         <div class="flex items-center gap-2">
           <i data-lucide="clipboard-list" class="w-4 h-4 text-primary-500"></i>
           <h2 class="text-sm font-bold text-slate-800">リアクションシート 送信履歴</h2>
@@ -493,12 +495,12 @@
           </button>
         </div>
       </div>
-      <!-- 一覧 -->
-      <div id="reaction-list" class="overflow-y-auto flex-1 px-4 py-3 space-y-3"></div>
+      <!-- 履歴リストエリア -->
+      <div id="reaction-list" class="overflow-y-auto flex-1 min-h-0"></div>
+      <!-- ページネーションエリア (reaction.jsが動的追加) -->
     </div>
   </div>
 
-  <script type="module" src="/main.js"></script>
 </body>
 
 </html>
