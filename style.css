@@ -7,3 +7,45 @@
     @apply bg-slate-50 text-slate-900 font-sans antialiased transition-colors duration-300;
   }
 }
+
+/* ===== レイアウト スタイル2: 2カラム ===== */
+@media (min-width: 1024px) {
+  #dashboard-main.layout-style2 {
+    display: grid !important;
+    grid-template-columns: 1fr 380px;
+    grid-template-rows: auto auto;
+    gap: 1.5rem;
+    align-items: stretch;
+  }
+
+  #dashboard-main.layout-style2 #section-lessons {
+    grid-column: 1;
+    grid-row: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  #dashboard-main.layout-style2 #lessons-container {
+    flex: 1;
+    overflow-y: auto;
+    max-height: calc(100vh - 200px);
+  }
+
+  #dashboard-main.layout-style2 .three-col-grid {
+    display: flex !important;
+    flex-direction: column;
+    gap: 1.5rem;
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  #dashboard-main.layout-style2 #section-links {
+    grid-column: 1 / 3;
+    grid-row: 2;
+  }
+
+  /* style2: 授業カードを縦1列に */
+  #dashboard-main.layout-style2 #section-lessons .grid {
+    grid-template-columns: 1fr !important;
+  }
+}

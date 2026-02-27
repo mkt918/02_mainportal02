@@ -1,50 +1,21 @@
-import { escapeHTML } from './utils.js';
+import { hexToRgb, adjustColor, isLightColor } from './utils.js';
+import { STORAGE_KEYS, SELECTORS, CONSTANTS, DEFAULT_SETTINGS } from './config.js';
 
 export class Settings {
     constructor() {
-        this.storageKey = 'class-portal-settings';
-        this.defaultSettings = {
-            themeColor: '#0ea5e9',
-            wallpaperMode: 'pattern',
-            wallpaperImage: '',
-            wallpaperColor: '#f8fafc',
-            portalTitle: '学習ポータル',
-            cardOpacity: 90,
-            fontSize: 'md',
-            timetableDays: 5,
-            timetablePeriods: 6,
-            showPeriodTimes: false,
-            periodTimes: [
-                { start: '08:50', end: '09:40' },
-                { start: '09:50', end: '10:40' },
-                { start: '10:50', end: '11:40' },
-                { start: '13:00', end: '13:50' },
-                { start: '14:00', end: '14:50' },
-                { start: '15:00', end: '15:50' },
-                { start: '16:00', end: '16:50' },
-            ],
-            lessonsLimit: 0,
-            headerStyle: 'glass',
-            headerBgColor: '',     // 空文字 = themeColorに追随
-            layoutStyle: 'style1', // style1 or style2
-            widgetVisibility: {
-                timetable: true,
-                lessons: true,
-                calendar: true,
-                todo: true,
-                links: true,
-            },
-        };
-
+        this.storageKey = STORAGE_KEYS.SETTINGS;
         this.settings = this.loadData();
         this.applySettings();
     }
+
+    // defaultSettings ゲッター（settings-modal.js の reset 処理で参照）
+    get defaultSettings() { return DEFAULT_SETTINGS; }
 
     // ─── 永続化 ───────────────────────────────
 
     loadData() {
         const saved = localStorage.getItem(this.storageKey);
-        const base = { ...this.defaultSettings };
+        const base = { ...DEFAULT_SETTINGS };
         if (!saved) return base;
         const parsed = JSON.parse(saved);
         return {
@@ -79,8 +50,7 @@ export class Settings {
 
     /** CSS変数・カード透明度・フォントサイズ */
     _applyTheme(s) {
-        const body = document.body;
-        const rgb = this._hexToRgb(s.themeColor) || { r: 14, g: 165, b: 233 };
+        const rgb = hexToRgb(s.themeColor) || { r: 14, g: 165, b: 233 };
         const baseOpacity = (s.cardOpacity / 100).toFixed(2);
 
         let styleTag = document.getElementById('dynamic-theme-styles');
@@ -90,30 +60,33 @@ export class Settings {
             document.head.appendChild(styleTag);
         }
 
-        // colored/gradient のときはヘッダー背景を !important で上書きしない
+        // colored/gradient のときはヘッダー背景を _applyHeader に任せる
         const hs = s.headerStyle || 'glass';
         const headerBgRule = (hs === 'colored' || hs === 'gradient')
-            ? ''  // _applyHeader に任せる
+            ? ''
             : `#main-header { background-color: rgba(255,255,255,${Math.min(1, parseFloat(baseOpacity) + 0.1).toFixed(2)}) !important; }`;
+
+        const d6 = CONSTANTS.COLOR_DARKEN_600;
+        const d7 = CONSTANTS.COLOR_DARKEN_700;
 
         styleTag.textContent = `
       :root {
         --tw-color-primary-50:  rgba(${rgb.r},${rgb.g},${rgb.b},0.05);
         --tw-color-primary-100: rgba(${rgb.r},${rgb.g},${rgb.b},0.15);
         --tw-color-primary-500: rgb(${rgb.r},${rgb.g},${rgb.b});
-        --tw-color-primary-600: rgb(${Math.max(0, rgb.r - 20)},${Math.max(0, rgb.g - 20)},${Math.max(0, rgb.b - 20)});
+        --tw-color-primary-600: rgb(${Math.max(0, rgb.r + d6)},${Math.max(0, rgb.g + d6)},${Math.max(0, rgb.b + d6)});
       }
       .bg-primary-50  { background-color: var(--tw-color-primary-50)  !important; }
       .bg-primary-100 { background-color: var(--tw-color-primary-100) !important; }
       .bg-primary-500 { background-color: var(--tw-color-primary-500) !important; }
       .bg-primary-600 { background-color: var(--tw-color-primary-600) !important; }
-      .bg-primary-700 { background-color: rgb(${Math.max(0, rgb.r - 40)},${Math.max(0, rgb.g - 40)},${Math.max(0, rgb.b - 40)}) !important; }
+      .bg-primary-700 { background-color: rgb(${Math.max(0, rgb.r + d7)},${Math.max(0, rgb.g + d7)},${Math.max(0, rgb.b + d7)}) !important; }
       .text-primary-500 { color: var(--tw-color-primary-500) !important; }
       .text-primary-600 { color: var(--tw-color-primary-600) !important; }
       .from-primary-600 { --tw-gradient-from: var(--tw-color-primary-600) !important; }
       .hover\\:bg-primary-50:hover  { background-color: var(--tw-color-primary-50)  !important; }
       .hover\\:bg-primary-100:hover { background-color: var(--tw-color-primary-100) !important; }
-      .hover\\:bg-primary-700:hover { background-color: rgb(${Math.max(0, rgb.r - 40)},${Math.max(0, rgb.g - 40)},${Math.max(0, rgb.b - 40)}) !important; }
+      .hover\\:bg-primary-700:hover { background-color: rgb(${Math.max(0, rgb.r + d7)},${Math.max(0, rgb.g + d7)},${Math.max(0, rgb.b + d7)}) !important; }
       .hover\\:border-primary-100:hover { border-color: var(--tw-color-primary-100) !important; }
       .hover\\:border-primary-200:hover { border-color: rgba(${rgb.r},${rgb.g},${rgb.b},0.3) !important; }
       .hover\\:text-primary-600:hover { color: var(--tw-color-primary-600) !important; }
@@ -165,10 +138,10 @@ export class Settings {
 
     /** ヘッダースタイル */
     _applyHeader(s) {
-        const header = document.getElementById('main-header');
+        const header = document.querySelector(SELECTORS.MAIN_HEADER);
         if (!header) return;
         header.removeAttribute('class');
-        header.style.cssText = '';  // まず全リセット
+        header.style.cssText = '';
         const base = 'sticky top-0 z-50 transition-all duration-300';
         const hs = s.headerStyle || 'glass';
         const color = (s.headerBgColor && s.headerBgColor !== '') ? s.headerBgColor : s.themeColor;
@@ -184,15 +157,14 @@ export class Settings {
             header.style.backgroundImage = 'none';
         } else if (hs === 'gradient') {
             header.className = `${base} shadow-md`;
-            header.style.backgroundImage = `linear-gradient(135deg, ${color} 0%, ${this._adjustColor(color, -50)} 100%)`;
+            header.style.backgroundImage = `linear-gradient(135deg, ${color} 0%, ${adjustColor(color, CONSTANTS.COLOR_DARKEN_GRADIENT)} 100%)`;
         }
 
         // テキスト色: colored/gradient のとき輝度判定で白/黒を自動切替
         const h1 = header.querySelector('h1');
         const settingsBtn = header.querySelector('#btn-settings');
         if (hs === 'colored' || hs === 'gradient') {
-            const bright = this._isLight(color);
-            const textColor = bright ? '#1e293b' : 'white';
+            const textColor = isLightColor(color) ? '#1e293b' : 'white';
             if (h1) {
                 h1.style.webkitTextFillColor = textColor;
                 h1.classList.remove('bg-clip-text', 'text-transparent', 'bg-gradient-to-r');
@@ -201,31 +173,21 @@ export class Settings {
         } else {
             if (h1) {
                 h1.style.webkitTextFillColor = '';
-                // グラデーションクラスを戻す
                 h1.classList.add('bg-clip-text', 'text-transparent', 'bg-gradient-to-r');
             }
             if (settingsBtn) settingsBtn.style.color = '';
         }
     }
 
-    /** 色が明るいかどうかを輝度で判定 */
-    _isLight(hex) {
-        const rgb = this._hexToRgb(hex);
-        if (!rgb) return true;
-        // 相対輝度 (0〜255)
-        const luminance = 0.299 * rgb.r + 0.587 * rgb.g + 0.114 * rgb.b;
-        return luminance > 160;
-    }
-
     /** ウィジェット表示制御 */
     _applyWidgets(s) {
         const v = s.widgetVisibility || {};
         const map = {
-            timetable: '#card-timetable',
-            lessons: '#section-lessons',
-            calendar: '#section-calendar',
-            todo: '#section-todo',
-            links: '#section-links',
+            timetable: SELECTORS.CARD_TIMETABLE,
+            lessons:   SELECTORS.SECTION_LESSONS,
+            calendar:  SELECTORS.SECTION_CAL,
+            todo:      SELECTORS.SECTION_TODO,
+            links:     SELECTORS.SECTION_LINKS,
         };
         for (const [key, selector] of Object.entries(map)) {
             const el = document.querySelector(selector);
@@ -235,7 +197,7 @@ export class Settings {
 
     /** レイアウトスタイル切替 */
     _applyLayout(s) {
-        const main = document.getElementById('dashboard-main');
+        const main = document.querySelector(SELECTORS.DASHBOARD_MAIN);
         if (!main) return;
         main.classList.remove('layout-style1', 'layout-style2');
         main.classList.add('layout-' + (s.layoutStyle || 'style1'));
@@ -243,21 +205,8 @@ export class Settings {
 
     /** タイトル */
     _applyTitle(s) {
-        const titleEl = document.querySelector('#main-header h1');
+        const titleEl = document.querySelector(`${SELECTORS.MAIN_HEADER} h1`);
         if (titleEl) titleEl.textContent = s.portalTitle || '学習ポータル';
         document.title = (s.portalTitle || '学習ポータル') + ' - Dashboard';
-    }
-
-    // ─── プライベートユーティリティ ────────────
-
-    _hexToRgb(hex) {
-        const m = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-        return m ? { r: parseInt(m[1], 16), g: parseInt(m[2], 16), b: parseInt(m[3], 16) } : null;
-    }
-
-    _adjustColor(hex, amount) {
-        return '#' + hex.replace(/^#/, '').replace(/../g, c =>
-            ('0' + Math.min(255, Math.max(0, parseInt(c, 16) + amount)).toString(16)).slice(-2)
-        );
     }
 }

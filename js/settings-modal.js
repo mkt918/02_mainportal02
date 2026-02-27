@@ -2,6 +2,8 @@
  * settings-modal.js - 設定モーダルのUIロジック
  * main.jsから切り出した設定モーダルの制御クラス
  */
+import { DEFAULT_SETTINGS } from './config.js';
+
 export class SettingsModal {
     constructor({ settings, timetable, calendar, links, todo, lessons }) {
         this.settings = settings;
@@ -91,7 +93,7 @@ export class SettingsModal {
 
         // リセット
         document.getElementById('btn-reset-settings').addEventListener('click', () => {
-            Object.assign(this.settings.settings, this.settings.defaultSettings);
+            Object.assign(this.settings.settings, DEFAULT_SETTINGS);
             this.settings.saveData();
             this.timetable.render();
             this.calendar.render();

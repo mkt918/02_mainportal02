@@ -1,15 +1,16 @@
 import { escapeHTML } from './utils.js';
+import { STORAGE_KEYS, TIMETABLE_PALETTE } from './config.js';
 
 export class Timetable {
   constructor(containerId, settings) {
     this.container = document.getElementById(containerId);
-    this.storageKey = 'class-portal-timetable';
-    this.colorStorageKey = 'class-portal-subject-colors';
+    this.storageKey = STORAGE_KEYS.TIMETABLE;
+    this.colorStorageKey = STORAGE_KEYS.SUBJECT_COLORS;
     this.settings = settings;
     this.isEditing = false;
     this.data = this.loadData();
     this.subjectColors = this.loadColors();
-    this.palette = ['#bfdbfe', '#bbf7d0', '#fef08a', '#fecaca', '#ddd6fe', '#fed7aa', '#cffafe', '#fbcfe8', '#e5e7eb', '#d1fae5'];
+    this.palette = TIMETABLE_PALETTE;
     this.render();
   }
 

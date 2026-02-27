@@ -1,7 +1,10 @@
+import { formatJpDate } from './utils.js';
+import { STORAGE_KEYS, SELECTORS } from './config.js';
+
 export class Calendar {
   constructor(containerId) {
     this.container = document.getElementById(containerId);
-    this.storageKey = 'class-portal-calendar-notes';
+    this.storageKey = STORAGE_KEYS.CALENDAR_NOTES;
     this.currentDate = new Date();
     this.notes = this.loadNotes();
     this.selectedDay = null;
@@ -32,11 +35,6 @@ export class Calendar {
       .slice(0, maxCount);
   }
 
-  formatNoteDate(dateObj) {
-    const days = ['日', '月', '火', '水', '木', '金', '土'];
-    return `${dateObj.getMonth() + 1}/${dateObj.getDate()}（${days[dateObj.getDay()]}）`;
-  }
-
   openNote(day) {
     const year = this.currentDate.getFullYear();
     const month = this.currentDate.getMonth();
@@ -46,7 +44,7 @@ export class Calendar {
   }
 
   renderNotePanel(key) {
-    const panel = document.getElementById('calendar-note-panel');
+    const panel = document.querySelector(SELECTORS.CAL_NOTE_PANEL);
     if (!panel) return;
     const s = this.selectedDay;
     const existing = this.notes[key] || '';
@@ -91,7 +89,7 @@ export class Calendar {
 
   // 直近メモを常時表示エリアに描画
   renderUpcomingNotes() {
-    const area = document.getElementById('calendar-upcoming-notes');
+    const area = document.querySelector(SELECTORS.CAL_UPCOMING);
     if (!area) return;
     const upcoming = this.getUpcomingNotes(3);
     if (!upcoming.length) {
@@ -100,7 +98,7 @@ export class Calendar {
     }
     area.innerHTML = upcoming.map(n => `
       <div class="flex gap-2 items-start text-xs py-1.5 border-b border-slate-100 last:border-0">
-        <span class="font-semibold text-primary-600 shrink-0 w-20">${this.formatNoteDate(n.date)}</span>
+        <span class="font-semibold text-primary-600 shrink-0 w-20">${formatJpDate(n.date)}</span>
         <span class="text-slate-600 line-clamp-2">${n.text}</span>
       </div>
     `).join('');

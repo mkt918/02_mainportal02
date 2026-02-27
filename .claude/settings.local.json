@@ -4,7 +4,8 @@
       "Bash(npm run build)",
       "Bash(npm run deploy)",
       "Bash(git ls-tree -r remotes/origin/gh-pages)",
-      "Bash(git ls-tree -r HEAD)"
+      "Bash(git ls-tree -r HEAD)",
+      "Bash(test -d /c/Program2/T/02_mainportal02/note)"
     ]
   }
 }

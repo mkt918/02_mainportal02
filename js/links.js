@@ -1,9 +1,10 @@
 import { escapeHTML } from './utils.js';
+import { STORAGE_KEYS } from './config.js';
 
 export class Links {
   constructor(containerId) {
     this.container = document.getElementById(containerId);
-    this.storageKey = 'class-portal-links';
+    this.storageKey = STORAGE_KEYS.LINKS;
 
     this.defaultLinks = [
       { id: '1', title: '全商検定タイピング', url: 'https://mkt918.github.io/typing03/', icon: 'keyboard', color: 'text-blue-500' },

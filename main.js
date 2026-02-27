@@ -1,4 +1,5 @@
 import './style.css';
+import { initReaction } from './js/reaction.js';
 import { Timetable } from './js/timetable.js';
 import { Calendar } from './js/calendar.js';
 import { TodoList } from './js/todo.js';
@@ -26,3 +27,6 @@ document.getElementById('btn-edit-timetable').addEventListener('click', e => {
 
 // ─── アイコン初期化 ────────────────────────────────
 lucide.createIcons();
+
+// ─── リアクション履歴機能 ──────────────────────────
+initReaction();

@@ -1,10 +1,11 @@
-import { escapeHTML } from './utils.js';
+import { escapeHTML, calcDeadlineDiff } from './utils.js';
+import { STORAGE_KEYS, CONSTANTS } from './config.js';
 
 export class TodoList {
   constructor(containerId) {
     this.container = document.getElementById(containerId);
-    this.storageKey = 'class-portal-todo-v2';
-    this.MAX_PRIORITY = 5;
+    this.storageKey = STORAGE_KEYS.TODO;
+    this.MAX_PRIORITY = CONSTANTS.TODO_MAX_PRIORITY;
     this.tasks = this.loadData();
     this.dragSrcId = null;
     this.render();
@@ -37,8 +38,7 @@ export class TodoList {
   formatDeadline(deadline) {
     if (!deadline) return '';
     const d = new Date(deadline + 'T00:00:00');
-    const today = new Date(); today.setHours(0, 0, 0, 0);
-    const diff = Math.ceil((d - today) / 86400000);
+    const diff = calcDeadlineDiff(deadline);
     const ds = `${d.getMonth() + 1}/${d.getDate()}`;
     if (diff < 0) return `<span class="text-red-500 font-bold">${ds} 期限切れ</span>`;
     if (diff === 0) return `<span class="text-red-500 font-bold">${ds} 今日</span>`;
