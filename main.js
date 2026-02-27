@@ -1,5 +1,6 @@
 import './style.css';
 import { initReaction } from './js/reaction.js';
+import { initTrivia } from './js/trivia.js';
 import { Timetable } from './js/timetable.js';
 import { Calendar } from './js/calendar.js';
 import { TodoList } from './js/todo.js';
@@ -30,3 +31,6 @@ lucide.createIcons();
 
 // ─── リアクション履歴機能 ──────────────────────────
 initReaction();
+
+// ─── トリビア ─────────────────────────────
+initTrivia();

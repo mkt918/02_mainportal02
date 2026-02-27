@@ -13,12 +13,17 @@
     <!-- ヘッダー -->
     <header class="bg-white/80 backdrop-blur-md shadow-sm sticky top-0 z-50 transition-all duration-300"
       id="main-header">
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
+      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 grid grid-cols-[auto_1fr_auto] items-center gap-4">
+        <!-- 左: ロゴ -->
         <div class="flex items-center gap-2">
           <i data-lucide="book-open" class="text-primary-600 w-5 h-5"></i>
           <h1 class="text-lg font-bold bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-indigo-600">
             学習ポータル</h1>
         </div>
+        <!-- 中央: トリビア -->
+        <p id="header-trivia" class="text-center text-[0.8em] font-medium truncate px-2 transition-opacity duration-400
+                 bg-clip-text text-transparent bg-gradient-to-r from-primary-600 to-indigo-600"
+          style="-webkit-background-clip: text; background-clip: text;"></p>
         <div class="flex items-center gap-1">
           <!-- リアクションシート履歴ボタン -->
           <button id="btn-reaction-history"
